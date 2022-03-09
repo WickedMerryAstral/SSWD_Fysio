@@ -11,9 +11,13 @@ namespace Core.Domain
         // Identifiers
         public string treatmentPlanId;
         public string patientId;
+        public Patient patient;
         public string practitionerId;
+        public Practitioner practitioner;
         public string patientFileId;
+        public PatientFile pratientFile;
         public string[] treatmentIds;
+        public Treatment[] treatments;
 
         // Info
         public string diagnosis;

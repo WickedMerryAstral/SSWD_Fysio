@@ -10,6 +10,10 @@ namespace Core.Domain
     {
         // Identifiers
         public string practitionerId;
+        public string[] treatmentPlanIds;
+        public TreatmentPlan[] treatmentPlans;
+        public string[] treatmentIds;
+        public Treatment[] treatments;
 
         // Info
         public PractitionerType type;

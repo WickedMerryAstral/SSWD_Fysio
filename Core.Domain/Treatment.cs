@@ -11,6 +11,9 @@ namespace Core.Domain
         // Identifiers
         public string treatmentId;
         public string practitionerId;
+        public Practitioner practitioner;
+        public string treatmentPlanId;
+        public TreatmentPlan treatmentPlan;
 
         // Get type from Vektis treatment data
         public string type;

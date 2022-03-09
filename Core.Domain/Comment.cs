@@ -12,6 +12,9 @@ namespace Core.Domain
         public string commentId;
         // Author is always a practitioner.
         public string practitionerId;
+        public Practitioner practitioner;
+        public string patientFileId;
+        public PatientFile patientFile;
 
         // Info
         public DateTime postDate;

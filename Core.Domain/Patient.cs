@@ -11,7 +11,8 @@ namespace Core.Domain
     {
         // Identifiers
         public string patientId;
-        public string fileId;
+        public string patientFileId;
+        public PatientFile patientFile;
 
         // Info
         public string studentNumber;
