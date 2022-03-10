@@ -10,8 +10,8 @@ namespace Core.Domain
     public class Patient
     {
         // Identifiers
-        public string patientId;
-        public string patientFileId;
+        public int patientId;
+        public int patientFileId;
         public PatientFile patientFile;
 
         // Info

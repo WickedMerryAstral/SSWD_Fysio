@@ -1,4 +1,5 @@
 ﻿using System;
+
 using Core.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +20,7 @@ namespace Infrastructure.EF
 
         protected override void OnModelCreating(ModelBuilder model)
         {
-            #region UNIQUE
+            #region UNIQUES
             model.Entity<Comment>().HasIndex(e => e.commentId).IsUnique();
             model.Entity<Patient>().HasIndex(e => e.patientId).IsUnique();
             model.Entity<PatientFile>().HasIndex(e => e.patientFileId).IsUnique();
@@ -31,18 +32,21 @@ namespace Infrastructure.EF
             #region PATIENTS
             // One to One, Patient has one patientfile, patientfile has one patient.
             model.Entity<Patient>()
-                .HasOne(p => p.patientFile)
-                .WithOne(pf => pf.patient);
+                .HasOne(p => p.patientFile);
             #endregion
 
             #region PATIENT FILES
+            //model.Entity<PatientFile>()
+            //    .HasOne(pf => pf.patient);
+
             // One to Many, PatientFiles have multiple comments. Comments belong to one patient file.
             model.Entity<PatientFile>()
                 .HasMany(pf => pf.comments)
-                .WithOne(c => c.patientFile);
+                .WithOne(c => c.patientFile)
+                .HasForeignKey(c => c.patientFileId);
+
             model.Entity<PatientFile>()
-                .HasOne(pf => pf.treatmentPlan)
-                .WithOne(tp => tp.pratientFile);
+                .HasOne(pf => pf.treatmentPlan);
             model.Entity<PatientFile>()
                 .HasOne(pf => pf.intakeByPractitioner);
             model.Entity<PatientFile>()
@@ -53,11 +57,14 @@ namespace Infrastructure.EF
             // TREATMENT PLANS
             model.Entity<TreatmentPlan>()
                 .HasMany(tp => tp.treatments)
-                .WithOne(t => t.treatmentPlan);
+                .WithOne(t => t.treatmentPlan)
+                .HasForeignKey(tp => tp.treatmentPlanId);
+
             // Head practitioner of a treatmentplan.
             model.Entity<TreatmentPlan>()
                 .HasOne(tp => tp.practitioner)
-                .WithMany(p => p.treatmentPlans);
+                .WithMany(p => p.treatmentPlans)
+                .HasForeignKey(tp => tp.treatmentPlanId);
             #endregion
 
             #region TREATMENTS

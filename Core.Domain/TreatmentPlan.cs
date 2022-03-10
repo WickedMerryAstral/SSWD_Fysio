@@ -9,21 +9,21 @@ namespace Core.Domain
     public class TreatmentPlan
     {
         // Identifiers
-        public string treatmentPlanId;
-        public string patientId;
-        public Patient patient;
-        public string practitionerId;
-        public Practitioner practitioner;
-        public string patientFileId;
-        public PatientFile pratientFile;
-        public string[] treatmentIds;
-        public Treatment[] treatments;
+        public int treatmentPlanId { get; set; }
+        public int patientId { get; set; }
+        public Patient patient { get; set; }
+        public int practitionerId { get; set; }
+        public Practitioner practitioner { get; set; }
+        public int patientFileId { get; set; }
+        public PatientFile pratientFile { get; set; }
+        public int[] treatmentIds { get; set; }
+        public Treatment[] treatments { get; set; }
 
         // Info
-        public string diagnosis;
-        public string complaint;
-        public int weeklySessions;
+        public string diagnosis { get; set; }
+        public string complaint { get; set; }
+        public int weeklySessions { get; set; }
         // Duration is measured in minutes.
-        public int sessionDuration;
+        public int sessionDuration { get; set; }
     }
 }

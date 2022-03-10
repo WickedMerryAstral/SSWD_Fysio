@@ -9,11 +9,11 @@ namespace Core.Domain
     public class Comment
     {
         // Identifiers
-        public string commentId;
+        public int commentId;
         // Author is always a practitioner.
-        public string practitionerId;
+        public int practitionerId;
         public Practitioner practitioner;
-        public string patientFileId;
+        public int patientFileId;
         public PatientFile patientFile;
 
         // Info

@@ -7,12 +7,13 @@ namespace Core.Domain
     public class Account
     {
         // Identifiers
-        public string accountId;
-        public string practitionerId;
-        public string patientId;
-        
+        public string accountId { get; set; }
+        public string practitionerId { get; set; }
+        public string patientId { get; set; }
+
         // Login
-        public string mail;
-        public string password;
+        // Mail is system-wide unique.
+        public string mail { get; set; }
+        public string password { get; set; }
     }
 }

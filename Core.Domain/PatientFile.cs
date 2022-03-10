@@ -9,14 +9,14 @@ namespace Core.Domain
     public class PatientFile
     {
         // Identifiers
-        public string patientFileId;
-        public string patientId;
+        public int patientFileId;
+        public int patientId;
         public Patient patient;
-        public string treatmentPlanId;
+        public int treatmentPlanId;
         public TreatmentPlan treatmentPlan;
-        public string intakeByPractitionerId;
+        public int intakeByPractitionerId;
         public Practitioner intakeByPractitioner;
-        public string supervisedByPractitionerId;
+        public int supervisedByPractitionerId;
         public Practitioner supervisedByPractitioner;
         public string[] commentIds;
         public Comment[] comments;

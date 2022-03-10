@@ -9,10 +9,10 @@ namespace Core.Domain
     public class Treatment
     {
         // Identifiers
-        public string treatmentId;
-        public string practitionerId;
+        public int treatmentId;
+        public int practitionerId;
         public Practitioner practitioner;
-        public string treatmentPlanId;
+        public int treatmentPlanId;
         public TreatmentPlan treatmentPlan;
 
         // Get type from Vektis treatment data

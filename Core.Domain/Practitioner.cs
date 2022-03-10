@@ -9,10 +9,10 @@ namespace Core.Domain
     public class Practitioner
     {
         // Identifiers
-        public string practitionerId;
-        public string[] treatmentPlanIds;
+        public int practitionerId;
+        public int[] treatmentPlanIds;
         public TreatmentPlan[] treatmentPlans;
-        public string[] treatmentIds;
+        public int[] treatmentIds;
         public Treatment[] treatments;
 
         // Info
