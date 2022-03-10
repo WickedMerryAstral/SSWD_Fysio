@@ -9,22 +9,22 @@ namespace Core.Domain
     public class Practitioner
     {
         // Identifiers
-        public int practitionerId;
-        public int[] treatmentPlanIds;
-        public TreatmentPlan[] treatmentPlans;
-        public int[] treatmentIds;
-        public Treatment[] treatments;
+        public int practitionerId { get; set; }
+        public TreatmentPlan[] treatmentPlans { get; set; }
+        public Treatment[] treatments { get; set; }
+        public PatientFile[] intakeByPatientFiles { get; set; }
+        public PatientFile[] supervisedByPatientFiles { get; set; }
 
         // Info
-        public PractitionerType type;
-        public string name;
-        public string mail;
-        public string studentNumber;
-        public string employeeNumber;
+        public PractitionerType type { get; set; }
+        public string name { get; set; }
+        public string mail { get; set; }
+        public string studentNumber { get; set; }
+        public string employeeNumber { get; set; }
 
         // Only teachers have a BIG number, and a phone number registered. No need to validate BIG numbers.
-        public string phone;
-        public string BIGNumber;
+        public string phone { get; set; }
+        public string BIGNumber { get; set; }
     }
 
     // Practitioners can be either students or teachers. Fill Student -or EmployeeNumber respectively.

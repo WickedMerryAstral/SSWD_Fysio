@@ -16,7 +16,6 @@ namespace Core.Domain
         public Practitioner practitioner { get; set; }
         public int patientFileId { get; set; }
         public PatientFile pratientFile { get; set; }
-        public int[] treatmentIds { get; set; }
         public Treatment[] treatments { get; set; }
 
         // Info

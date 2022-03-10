@@ -32,7 +32,9 @@ namespace Infrastructure.EF
             #region PATIENTS
             // One to One, Patient has one patientfile, patientfile has one patient.
             model.Entity<Patient>()
-                .HasOne(p => p.patientFile);
+                .HasOne(p => p.patientFile)
+                .WithOne(pf => pf.patient)
+                .HasForeignKey<Patient>(p => p.patientFileId);
             #endregion
 
             #region PATIENT FILES
@@ -46,15 +48,22 @@ namespace Infrastructure.EF
                 .HasForeignKey(c => c.patientFileId);
 
             model.Entity<PatientFile>()
-                .HasOne(pf => pf.treatmentPlan);
+                .HasOne(pf => pf.treatmentPlan)
+                .WithOne(tp => tp.pratientFile)
+                .HasForeignKey<PatientFile>(pf => pf.treatmentPlanId);
+
             model.Entity<PatientFile>()
-                .HasOne(pf => pf.intakeByPractitioner);
+                .HasOne(pf => pf.intakeByPractitioner)
+                .WithMany(p => p.intakeByPatientFiles)
+                .HasForeignKey(pf => pf.intakeByPractitionerId);
+
             model.Entity<PatientFile>()
-                .HasOne(pf => pf.supervisedByPractitioner);
+                .HasOne(pf => pf.supervisedByPractitioner)
+                .WithMany(p => p.supervisedByPatientFiles)
+                .HasForeignKey(pf => pf.supervisedByPractitionerId);
             #endregion
 
             #region TREATMENT PLANS
-            // TREATMENT PLANS
             model.Entity<TreatmentPlan>()
                 .HasMany(tp => tp.treatments)
                 .WithOne(t => t.treatmentPlan)
@@ -68,13 +77,17 @@ namespace Infrastructure.EF
             #endregion
 
             #region TREATMENTS
-            // TREATMENTS
-            model.Entity<Treatment>()
-                .HasOne(t => t.practitioner);
+
+            #endregion
+
+            #region PRACTITIONERS
+            model.Entity<Practitioner>()
+                .HasMany(p => p.treatments)
+                .WithOne(t => t.practitioner)
+                .HasForeignKey(t => t.practitionerId);
             #endregion
 
             #region COMMENTS
-            // COMMENTS
             // Author of comment
             model.Entity<Comment>()
                 .HasOne(c => c.practitioner);

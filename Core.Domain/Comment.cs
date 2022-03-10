@@ -9,16 +9,16 @@ namespace Core.Domain
     public class Comment
     {
         // Identifiers
-        public int commentId;
+        public int commentId { get; set; }
         // Author is always a practitioner.
-        public int practitionerId;
-        public Practitioner practitioner;
-        public int patientFileId;
-        public PatientFile patientFile;
+        public int practitionerId { get; set; }
+        public Practitioner practitioner { get; set; }
+        public int patientFileId { get; set; }
+        public PatientFile patientFile { get; set; }
 
         // Info
-        public DateTime postDate;
-        public bool visible;
-        public string content;
+        public DateTime postDate { get; set; }
+        public bool visible { get; set; }
+        public string content { get; set; }
     }
 }
