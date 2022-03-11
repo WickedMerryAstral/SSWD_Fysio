@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SSWD_Fysio.Models;
+using Core.Domain;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,6 +23,9 @@ namespace SSWD_Fysio.Controllers
 
         public IActionResult Index()
         {
+            // Test Code
+            
+
             return View();
         }
 

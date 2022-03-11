@@ -38,10 +38,6 @@ namespace Infrastructure.EF
             #endregion
 
             #region PATIENT FILES
-            //model.Entity<PatientFile>()
-            //    .HasOne(pf => pf.patient);
-
-            // One to Many, PatientFiles have multiple comments. Comments belong to one patient file.
             model.Entity<PatientFile>()
                 .HasMany(pf => pf.comments)
                 .WithOne(c => c.patientFile)

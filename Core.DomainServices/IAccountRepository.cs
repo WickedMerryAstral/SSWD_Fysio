@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Core.DomainServices
 {
-    public interface IPatientInterface
+    public interface IAccountRepository
     {
     }
 }
