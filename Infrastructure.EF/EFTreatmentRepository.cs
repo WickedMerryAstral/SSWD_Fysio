@@ -10,27 +10,33 @@ namespace Infrastructure.EF
 {
     public class EFTreatmentRepository : ITreatmentRepository
     {
-        public int addTreatment(Treatment treatment)
+        private FysioDBContext context;
+        public EFTreatmentRepository(FysioDBContext db)
+        {
+            this.context = db;
+        }
+
+        public int AddTreatment(Treatment treatment)
         {
             throw new NotImplementedException();
         }
 
-        public int deleteTreatmentById(int id)
+        public int DeleteTreatmentById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Treatment findTreatmentById(int id)
+        public Treatment FindTreatmentById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Treatment[] findTreatmentsByPractitioner(int practitionerId)
+        public IEnumerable<Treatment> FindTreatmentsByPractitioner(int practitionerId)
         {
             throw new NotImplementedException();
         }
 
-        public Treatment[] findTreatmentsByTreatmentPlan(int planId)
+        public IEnumerable<Treatment> FindTreatmentsByTreatmentPlan(int planId)
         {
             throw new NotImplementedException();
         }

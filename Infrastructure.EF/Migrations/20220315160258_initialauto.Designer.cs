@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.EF.Migrations
 {
     [DbContext(typeof(FysioDBContext))]
-    [Migration("20220310105820_initial")]
-    partial class initial
+    [Migration("20220315160258_initialauto")]
+    partial class initialauto
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -49,12 +49,9 @@ namespace Infrastructure.EF.Migrations
 
                     b.HasKey("commentId");
 
-                    b.HasIndex("commentId")
-                        .IsUnique();
+                    b.HasIndex("commentId");
 
                     b.HasIndex("patientFileId");
-
-                    b.HasIndex("practitionerId");
 
                     b.ToTable("comments");
                 });
@@ -67,8 +64,8 @@ namespace Infrastructure.EF.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("patientId"), 1L, 1);
 
-                    b.Property<DateTime>("birthdate")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("age")
+                        .HasColumnType("int");
 
                     b.Property<string>("employeeNumber")
                         .HasColumnType("nvarchar(max)");
@@ -99,11 +96,7 @@ namespace Infrastructure.EF.Migrations
 
                     b.HasKey("patientId");
 
-                    b.HasIndex("patientFileId")
-                        .IsUnique();
-
-                    b.HasIndex("patientId")
-                        .IsUnique();
+                    b.HasIndex("patientId");
 
                     b.ToTable("patients");
                 });
@@ -116,8 +109,8 @@ namespace Infrastructure.EF.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("patientFileId"), 1L, 1);
 
-                    b.Property<int>("age")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("birthDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("dischargeDate")
                         .HasColumnType("datetime2");
@@ -128,13 +121,19 @@ namespace Infrastructure.EF.Migrations
                     b.Property<int>("patientId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("patientId1")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("registerDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("supervisedByPractitionerId")
+                    b.Property<int>("supervisedBypractitionerId")
                         .HasColumnType("int");
 
                     b.Property<int>("treatmentPlanId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("treatmentPlanId1")
                         .HasColumnType("int");
 
                     b.Property<int>("type")
@@ -142,15 +141,11 @@ namespace Infrastructure.EF.Migrations
 
                     b.HasKey("patientFileId");
 
-                    b.HasIndex("intakeByPractitionerId");
+                    b.HasIndex("patientFileId");
 
-                    b.HasIndex("patientFileId")
-                        .IsUnique();
+                    b.HasIndex("patientId1");
 
-                    b.HasIndex("supervisedByPractitionerId");
-
-                    b.HasIndex("treatmentPlanId")
-                        .IsUnique();
+                    b.HasIndex("treatmentPlanId1");
 
                     b.ToTable("patientFiles");
                 });
@@ -186,8 +181,7 @@ namespace Infrastructure.EF.Migrations
 
                     b.HasKey("practitionerId");
 
-                    b.HasIndex("practitionerId")
-                        .IsUnique();
+                    b.HasIndex("practitionerId");
 
                     b.ToTable("practitioners");
                 });
@@ -219,8 +213,7 @@ namespace Infrastructure.EF.Migrations
 
                     b.HasIndex("practitionerId");
 
-                    b.HasIndex("treatmentId")
-                        .IsUnique();
+                    b.HasIndex("treatmentId");
 
                     b.HasIndex("treatmentPlanId");
 
@@ -230,7 +223,10 @@ namespace Infrastructure.EF.Migrations
             modelBuilder.Entity("Core.Domain.TreatmentPlan", b =>
                 {
                     b.Property<int>("treatmentPlanId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("treatmentPlanId"), 1L, 1);
 
                     b.Property<string>("complaint")
                         .HasColumnType("nvarchar(max)");
@@ -239,9 +235,6 @@ namespace Infrastructure.EF.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("patientFileId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("patientId")
                         .HasColumnType("int");
 
                     b.Property<int>("practitionerId")
@@ -255,131 +248,62 @@ namespace Infrastructure.EF.Migrations
 
                     b.HasKey("treatmentPlanId");
 
-                    b.HasIndex("patientId");
-
-                    b.HasIndex("treatmentPlanId")
-                        .IsUnique();
+                    b.HasIndex("treatmentPlanId");
 
                     b.ToTable("treatmentPlans");
                 });
 
             modelBuilder.Entity("Core.Domain.Comment", b =>
                 {
-                    b.HasOne("Core.Domain.PatientFile", "patientFile")
+                    b.HasOne("Core.Domain.PatientFile", null)
                         .WithMany("comments")
                         .HasForeignKey("patientFileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Core.Domain.Practitioner", "practitioner")
-                        .WithMany()
-                        .HasForeignKey("practitionerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("patientFile");
-
-                    b.Navigation("practitioner");
-                });
-
-            modelBuilder.Entity("Core.Domain.Patient", b =>
-                {
-                    b.HasOne("Core.Domain.PatientFile", "patientFile")
-                        .WithOne("patient")
-                        .HasForeignKey("Core.Domain.Patient", "patientFileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("patientFile");
                 });
 
             modelBuilder.Entity("Core.Domain.PatientFile", b =>
                 {
-                    b.HasOne("Core.Domain.Practitioner", "intakeByPractitioner")
-                        .WithMany("intakeByPatientFiles")
-                        .HasForeignKey("intakeByPractitionerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Core.Domain.Practitioner", "supervisedByPractitioner")
-                        .WithMany("supervisedByPatientFiles")
-                        .HasForeignKey("supervisedByPractitionerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Core.Domain.Patient", "patient")
+                        .WithMany()
+                        .HasForeignKey("patientId1");
 
                     b.HasOne("Core.Domain.TreatmentPlan", "treatmentPlan")
-                        .WithOne("pratientFile")
-                        .HasForeignKey("Core.Domain.PatientFile", "treatmentPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("treatmentPlanId1");
 
-                    b.Navigation("intakeByPractitioner");
-
-                    b.Navigation("supervisedByPractitioner");
+                    b.Navigation("patient");
 
                     b.Navigation("treatmentPlan");
                 });
 
             modelBuilder.Entity("Core.Domain.Treatment", b =>
                 {
-                    b.HasOne("Core.Domain.Practitioner", "practitioner")
+                    b.HasOne("Core.Domain.Practitioner", null)
                         .WithMany("treatments")
                         .HasForeignKey("practitionerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Core.Domain.TreatmentPlan", "treatmentPlan")
+                    b.HasOne("Core.Domain.TreatmentPlan", null)
                         .WithMany("treatments")
                         .HasForeignKey("treatmentPlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("practitioner");
-
-                    b.Navigation("treatmentPlan");
-                });
-
-            modelBuilder.Entity("Core.Domain.TreatmentPlan", b =>
-                {
-                    b.HasOne("Core.Domain.Patient", "patient")
-                        .WithMany()
-                        .HasForeignKey("patientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Core.Domain.Practitioner", "practitioner")
-                        .WithMany("treatmentPlans")
-                        .HasForeignKey("treatmentPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("patient");
-
-                    b.Navigation("practitioner");
                 });
 
             modelBuilder.Entity("Core.Domain.PatientFile", b =>
                 {
                     b.Navigation("comments");
-
-                    b.Navigation("patient");
                 });
 
             modelBuilder.Entity("Core.Domain.Practitioner", b =>
                 {
-                    b.Navigation("intakeByPatientFiles");
-
-                    b.Navigation("supervisedByPatientFiles");
-
-                    b.Navigation("treatmentPlans");
-
                     b.Navigation("treatments");
                 });
 
             modelBuilder.Entity("Core.Domain.TreatmentPlan", b =>
                 {
-                    b.Navigation("pratientFile");
-
                     b.Navigation("treatments");
                 });
 #pragma warning restore 612, 618

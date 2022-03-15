@@ -1,4 +1,6 @@
 using Infrastructure.EF;
+using Core.Domain;
+using Core.DomainServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
@@ -35,6 +37,13 @@ namespace SSWD_Fysio
             services.AddDbContext<FysioDBContext>(options =>
             options.UseSqlServer(Configuration[
                 "Data:FysioDB:ConnectionString"]));
+
+            // Dependency injection. Select which implementation will be used.
+            services.AddTransient<IPatientFileRepository, EFPatientFileRepository>();
+            services.AddTransient<IPatientRepository, EFPatientRepository>();
+            services.AddTransient<IPractitionerRepository, EFPractitionerRepository>();
+            services.AddTransient<ITreatmentPlanRepository, EFTreatmentPlanRepository>();
+            services.AddTransient<ITreatmentRepository, EFTreatmentRepository>();
 
             // Azure Auth
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)

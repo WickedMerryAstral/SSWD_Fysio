@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Core.Domain
 {
@@ -7,7 +8,8 @@ namespace Core.Domain
     public class Account
     {
         // Identifiers
-        public string accountId { get; set; }
+        [Key]
+        public int accountId { get; set; }
         public string practitionerId { get; set; }
         public string patientId { get; set; }
 

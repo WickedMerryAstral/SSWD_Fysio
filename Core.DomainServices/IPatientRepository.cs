@@ -9,8 +9,9 @@ namespace Core.DomainServices
 {
     public interface IPatientRepository
     {
-        public int addPatient(Patient patient);
-        public Patient findPatientById(int id);
-        public int deletePatientById(int id);
+        public int AddPatient(Patient patient);
+        public Patient FindPatientById(int id);
+        public int DeletePatientById(int id);
+        public IEnumerable<Patient> GetPatients();
     }
 }

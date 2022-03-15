@@ -10,17 +10,28 @@ namespace Infrastructure.EF
 {
     public class EFPatientRepository : IPatientRepository
     {
-        public int addPatient(Patient patient)
+        private FysioDBContext context;
+        public EFPatientRepository(FysioDBContext db)
+        {
+            this.context = db;
+        }
+
+        public int AddPatient(Patient patient)
         {
             throw new NotImplementedException();
         }
 
-        public int deletePatientById(int id)
+        public int DeletePatientById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Patient findPatientById(int id)
+        public Patient FindPatientById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Patient> GetPatients()
         {
             throw new NotImplementedException();
         }

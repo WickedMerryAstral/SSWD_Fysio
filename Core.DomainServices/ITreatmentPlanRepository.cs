@@ -9,8 +9,8 @@ namespace Core.DomainServices
 {
     public interface ITreatmentPlanRepository
     {
-        public int addTreatmentPlan(TreatmentPlan treatmentPlan);
-        public TreatmentPlan findTreatmentPlanById(int id);
-        public int deleteTreatmentPlanById(int id);
+        public int AddTreatmentPlan(TreatmentPlan treatmentPlan);
+        public TreatmentPlan FindTreatmentPlanById(int id);
+        public int DeleteTreatmentPlanById(int id);
     }
 }

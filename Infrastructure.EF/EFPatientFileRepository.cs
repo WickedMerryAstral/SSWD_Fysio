@@ -10,19 +10,47 @@ namespace Infrastructure.EF
 {
     public class EFPatientFileRepository : IPatientFileRepository
     {
-        public int addPatientFile(PatientFile patientFile)
+        private FysioDBContext context;
+        public EFPatientFileRepository(FysioDBContext db)
+        {
+            this.context = db;
+        }
+
+        public int AddPatientFile(PatientFile patientFile)
+        {
+            // Adding the new objects to the context.
+            //context.treatmentPlans.Add(patientFile.treatmentPlan);
+            //context.patients.Add(patientFile.patient);
+
+            context.patientFiles.Add(patientFile);
+            context.SaveChanges();
+
+            return patientFile.patientFileId;
+        }
+
+        public void DeletePatientFile(int id)
+        {
+            context.patientFiles.Remove(FindPatientFileById(id));
+        }
+
+        public PatientFile FindPatientFileById(int id)
+        {
+            return context.patientFiles.Where(p => p.patientFileId == id).FirstOrDefault();
+        }
+
+        public IEnumerable<PatientFile> GetPatientFiles()
+        {
+            return this.context.patientFiles;
+        }
+        public Patient GetPatientFromFile(PatientFile patientFile)
         {
             throw new NotImplementedException();
         }
 
-        public int deletePatientFile(int id)
+        public Patient GetPatientFromFileId(int id)
         {
-            throw new NotImplementedException();
-        }
-
-        public PatientFile findPatientFileById(int id)
-        {
-            throw new NotImplementedException();
+            PatientFile p = FindPatientFileById(id);
+            return p.patient;
         }
     }
 }

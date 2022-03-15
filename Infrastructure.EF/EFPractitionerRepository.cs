@@ -10,19 +10,27 @@ namespace Infrastructure.EF
 {
     public class EFPractitionerRepository : IPractitionerRepository
     {
-        public int addPractitioner(Practitioner practitioner)
+        private FysioDBContext context;
+        public EFPractitionerRepository(FysioDBContext db)
         {
-            throw new NotImplementedException();
+            this.context = db;
         }
 
-        public int deletePractitionerById(int id)
+        public int AddPractitioner(Practitioner practitioner)
         {
-            throw new NotImplementedException();
+            context.practitioners.Add(practitioner);
+            context.SaveChanges();
+            return practitioner.practitionerId;
         }
 
-        public Practitioner getPractitionerById(int id)
+        public void DeletePractitionerById(int id)
         {
-            throw new NotImplementedException();
+            context.Remove(GetPractitionerById(id));
+        }
+
+        public Practitioner GetPractitionerById(int id)
+        {
+            return context.practitioners.Where(p => p.practitionerId == id).FirstOrDefault();
         }
     }
 }

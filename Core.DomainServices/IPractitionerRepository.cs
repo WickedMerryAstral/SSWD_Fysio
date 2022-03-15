@@ -9,8 +9,8 @@ namespace Core.DomainServices
 {
     public interface IPractitionerRepository
     {
-        public int addPractitioner(Practitioner practitioner);
-        public Practitioner getPractitionerById(int id);
-        public int deletePractitionerById(int id);
+        public int AddPractitioner(Practitioner practitioner);
+        public Practitioner GetPractitionerById(int id);
+        public void DeletePractitionerById(int id);
     }
 }

@@ -20,73 +20,64 @@ namespace Infrastructure.EF
 
         protected override void OnModelCreating(ModelBuilder model)
         {
-            #region UNIQUES
-            model.Entity<Comment>().HasIndex(e => e.commentId).IsUnique();
-            model.Entity<Patient>().HasIndex(e => e.patientId).IsUnique();
-            model.Entity<PatientFile>().HasIndex(e => e.patientFileId).IsUnique();
-            model.Entity<Practitioner>().HasIndex(e => e.practitionerId).IsUnique();
-            model.Entity<Treatment>().HasIndex(e => e.treatmentId).IsUnique();
-            model.Entity<TreatmentPlan>().HasIndex(e => e.treatmentPlanId).IsUnique();
+            #region ENTITY SPECIFICATIONS (Keys, Auto-generated properties, etc)
+            model.Entity<Comment>(e => {
+                e.HasKey(e => e.commentId);
+                e.Property(e => e.commentId).ValueGeneratedOnAdd();
+                e.HasIndex(e => e.commentId);
+            });
+
+            model.Entity<Patient>(e => {
+                e.HasKey(e => e.patientId);
+                e.Property(e => e.patientId).ValueGeneratedOnAdd();
+                e.HasIndex(e => e.patientId);
+            });
+
+            model.Entity<PatientFile>(e => {
+                e.HasKey(e => e.patientFileId);
+                e.Property(e => e.patientFileId).ValueGeneratedOnAdd();
+                e.HasIndex(e => e.patientFileId);
+            });
+
+            model.Entity<Practitioner>(e => {
+                e.HasKey(e => e.practitionerId);
+                e.Property(e => e.practitionerId).ValueGeneratedOnAdd();
+                e.HasIndex(e => e.practitionerId);
+            });
+
+            model.Entity<Treatment>(e => {
+                e.HasKey(e => e.treatmentId);
+                e.Property(e => e.treatmentId).ValueGeneratedOnAdd();
+                e.HasIndex(e => e.treatmentId);
+            });
+
+            model.Entity<TreatmentPlan>(e => {
+                e.HasKey(e => e.treatmentPlanId);
+                e.Property(e => e.treatmentPlanId).ValueGeneratedOnAdd();
+                e.HasIndex(e => e.treatmentPlanId);
+            });
             #endregion
 
+            #region MANUAL CONSTRAINTS
+
             #region PATIENTS
-            // One to One, Patient has one patientfile, patientfile has one patient.
-            model.Entity<Patient>()
-                .HasOne(p => p.patientFile)
-                .WithOne(pf => pf.patient)
-                .HasForeignKey<Patient>(p => p.patientFileId);
             #endregion
 
             #region PATIENT FILES
-            model.Entity<PatientFile>()
-                .HasMany(pf => pf.comments)
-                .WithOne(c => c.patientFile)
-                .HasForeignKey(c => c.patientFileId);
-
-            model.Entity<PatientFile>()
-                .HasOne(pf => pf.treatmentPlan)
-                .WithOne(tp => tp.pratientFile)
-                .HasForeignKey<PatientFile>(pf => pf.treatmentPlanId);
-
-            model.Entity<PatientFile>()
-                .HasOne(pf => pf.intakeByPractitioner)
-                .WithMany(p => p.intakeByPatientFiles)
-                .HasForeignKey(pf => pf.intakeByPractitionerId);
-
-            model.Entity<PatientFile>()
-                .HasOne(pf => pf.supervisedByPractitioner)
-                .WithMany(p => p.supervisedByPatientFiles)
-                .HasForeignKey(pf => pf.supervisedByPractitionerId);
             #endregion
 
             #region TREATMENT PLANS
-            model.Entity<TreatmentPlan>()
-                .HasMany(tp => tp.treatments)
-                .WithOne(t => t.treatmentPlan)
-                .HasForeignKey(tp => tp.treatmentPlanId);
-
-            // Head practitioner of a treatmentplan.
-            model.Entity<TreatmentPlan>()
-                .HasOne(tp => tp.practitioner)
-                .WithMany(p => p.treatmentPlans)
-                .HasForeignKey(tp => tp.treatmentPlanId);
             #endregion
 
             #region TREATMENTS
-
             #endregion
 
             #region PRACTITIONERS
-            model.Entity<Practitioner>()
-                .HasMany(p => p.treatments)
-                .WithOne(t => t.practitioner)
-                .HasForeignKey(t => t.practitionerId);
             #endregion
 
             #region COMMENTS
-            // Author of comment
-            model.Entity<Comment>()
-                .HasOne(c => c.practitioner);
+            #endregion
+
             #endregion
         }
     }

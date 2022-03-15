@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,22 +10,42 @@ namespace Core.Domain
     public class PatientFile
     {
         // Identifiers
+        [Key]
         public int patientFileId { get; set; }
         public int patientId { get; set; }
         public Patient patient { get; set; }
         public int treatmentPlanId { get; set; }
         public TreatmentPlan treatmentPlan { get; set; }
         public int intakeByPractitionerId { get; set; }
-        public Practitioner intakeByPractitioner { get; set; }
-        public int supervisedByPractitionerId { get; set; }
-        public Practitioner supervisedByPractitioner { get; set; }
-        public Comment[] comments { get; set; }
+        public int supervisedBypractitionerId { get; set; }
+        public List<Comment> comments { get; set; }
 
         // Info
-        public int age { get; set; }
+        public DateTime birthDate { get; set; }
         public PatientFileType type { get; set; }
         public DateTime registerDate { get; set; }
         public DateTime dischargeDate { get; set; }
+
+        public PatientFile(int intakeByPractitioner, int supervisedByPractitioner, DateTime birthDate, PatientFileType type, DateTime registerDate, DateTime dischargeDate)
+        {
+            // Initializing a new patient and treatmentplan, as they are created during intake.
+            this.patient = new Patient();
+            this.treatmentPlan = new TreatmentPlan();
+
+            // Collection
+            this.comments = new List<Comment>();
+
+            this.intakeByPractitionerId = intakeByPractitioner;
+            this.supervisedBypractitionerId = supervisedByPractitioner;
+            this.birthDate = birthDate;
+            this.type = type;
+            this.registerDate = registerDate;
+            this.dischargeDate = dischargeDate;
+        }
+
+        public PatientFile()
+        {
+        }
     }
 
     public enum PatientFileType {
