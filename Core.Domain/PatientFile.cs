@@ -29,6 +29,7 @@ namespace Core.Domain
         public PatientFile(int intakeByPractitioner, int supervisedByPractitioner, DateTime birthDate, PatientFileType type, DateTime registerDate, DateTime dischargeDate)
         {
             // Initializing a new patient and treatmentplan, as they are created during intake.
+            // TreatmentPlan internally create new treatment lists when calling the default constructor.
             this.patient = new Patient();
             this.treatmentPlan = new TreatmentPlan();
 

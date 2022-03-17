@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Core.Domain.Comment>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.practitionerId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.postDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.visible)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.content)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.practitionerId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.postDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.visible)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.content)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.commentId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.commentId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.commentId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

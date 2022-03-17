@@ -28,7 +28,7 @@ namespace Core.Domain
         // Might not use this. Check again later.
         public PatientType type { get; set; }
 
-        public Patient(PatientFile patientFile, string studentNumber, string employeeNumber, string name, string mail, string phone, string photoURL, DateTime birthDate, Sex sex, PatientType type)
+        public Patient(string studentNumber, string employeeNumber, string name, string mail, string phone, string photoURL, DateTime birthDate, Sex sex, PatientType type)
         {
             this.studentNumber = studentNumber;
             this.employeeNumber = employeeNumber;

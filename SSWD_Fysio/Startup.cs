@@ -33,18 +33,6 @@ namespace SSWD_Fysio
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Database
-            services.AddDbContext<FysioDBContext>(options =>
-            options.UseSqlServer(Configuration[
-                "Data:FysioDB:ConnectionString"]));
-
-            // Dependency injection. Select which implementation will be used.
-            services.AddTransient<IPatientFileRepository, EFPatientFileRepository>();
-            services.AddTransient<IPatientRepository, EFPatientRepository>();
-            services.AddTransient<IPractitionerRepository, EFPractitionerRepository>();
-            services.AddTransient<ITreatmentPlanRepository, EFTreatmentPlanRepository>();
-            services.AddTransient<ITreatmentRepository, EFTreatmentRepository>();
-
             // Azure Auth
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
@@ -59,7 +47,20 @@ namespace SSWD_Fysio
             services.AddRazorPages()
                  .AddMicrosoftIdentityUI().AddMvcOptions(options => {});
             services.AddAuthorization(options=>{options.FallbackPolicy = options.DefaultPolicy;});
+
+            // Database
+            services.AddDbContext<FysioDBContext>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+            );
+
+            // Dependency injection. Select which implementation will be used.
+            services.AddTransient<IPatientFileRepository, EFPatientFileRepository>();
+            services.AddTransient<IPatientRepository, EFPatientRepository>();
+            services.AddTransient<IPractitionerRepository, EFPractitionerRepository>();
+            services.AddTransient<ITreatmentPlanRepository, EFTreatmentPlanRepository>();
+            services.AddTransient<ITreatmentRepository, EFTreatmentRepository>();
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

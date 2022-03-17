@@ -15,7 +15,6 @@ namespace Core.Domain
         public int practitionerId { get; set; }
         public int treatmentPlanId { get; set; }
 
-
         // Get type from Vektis treatment data
         public string type { get; set; }
 

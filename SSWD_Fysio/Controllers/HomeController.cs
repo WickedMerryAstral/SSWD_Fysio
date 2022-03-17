@@ -44,7 +44,7 @@ namespace SSWD_Fysio.Controllers
         public IActionResult Index()
         {
             // Test Code Area
-            FillData();
+            // FillData();
 
             return View();
         }

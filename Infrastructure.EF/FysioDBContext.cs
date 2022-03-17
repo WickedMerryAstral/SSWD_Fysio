@@ -8,8 +8,9 @@ namespace Infrastructure.EF
 {
     public class FysioDBContext : DbContext
     {
-        public FysioDBContext(DbContextOptions<FysioDBContext> options)
-            : base(options) { }
+        public FysioDBContext(DbContextOptions options) : base(options)
+        {
+        }
 
         public DbSet<Comment> comments { get; set; }
         public DbSet<Patient> patients { get; set; }
@@ -79,6 +80,13 @@ namespace Infrastructure.EF
             #endregion
 
             #endregion
+        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer("Data Source=MAYHEM;Initial Catalog=FysioDB;Integrated Security=True");
+            }
         }
     }
 }

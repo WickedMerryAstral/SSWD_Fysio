@@ -14,7 +14,7 @@ namespace Core.Domain
         public int treatmentPlanId { get; set; }
         public int practitionerId { get; set; }
         public int patientFileId { get; set; }
-        public Treatment[] treatments { get; set; }
+        public List<Treatment> treatments { get; set; }
 
         // Info
         public string diagnosis { get; set; }
@@ -23,7 +23,7 @@ namespace Core.Domain
         // Duration is measured in minutes.
         public int sessionDuration { get; set; }
 
-        public TreatmentPlan(int practitionerId, int patientFileId, Treatment[] treatments, string diagnosis, string complaint, int weeklySessions, int sessionDuration)
+        public TreatmentPlan(int practitionerId, int patientFileId, List<Treatment> treatments, string diagnosis, string complaint, int weeklySessions, int sessionDuration)
         {
             this.patientFileId = patientFileId;
             this.practitionerId = practitionerId;
@@ -36,6 +36,7 @@ namespace Core.Domain
 
         public TreatmentPlan()
         {
+            this.treatments = new List<Treatment>();
         }
     }
 }
