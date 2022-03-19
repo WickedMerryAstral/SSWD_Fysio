@@ -17,6 +17,8 @@ namespace Core.Domain
         // Info
         public PractitionerType type { get; set; }
         public string name { get; set; }
+
+        [Required]
         public string mail { get; set; }
         public string studentNumber { get; set; }
         public string employeeNumber { get; set; }

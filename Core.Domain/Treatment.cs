@@ -12,7 +12,11 @@ namespace Core.Domain
         // Identifiers
         [Key]
         public int treatmentId { get; set; }
+
+        [Required]
         public int practitionerId { get; set; }
+
+        [Required]
         public int treatmentPlanId { get; set; }
 
         // Get type from Vektis treatment data

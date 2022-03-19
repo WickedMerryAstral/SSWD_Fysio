@@ -18,7 +18,11 @@ namespace Core.Domain
         // Info
         public string studentNumber { get; set; }
         public string employeeNumber { get; set; }
+
+        [Required]
         public string name { get; set; }
+
+        [Required]
         public string mail { get; set; }
         public string phone { get; set; }
         public string photoURL { get; set; }

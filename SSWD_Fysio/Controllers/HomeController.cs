@@ -65,10 +65,11 @@ namespace SSWD_Fysio.Controllers
 
             // Some default data to fill the void
             // In order of creation in business logic:
+            // Account
             // Practitioner
-            // Treatment Plans and Patient File
-            // The Patient
-            // Treatments and Comments
+            // PatientFile
+            // Patients, TreatmentPlans
+            // Treatments, Comments
 
             //// Practitioner, initializing Lists within constructor
             Practitioner pr1 = new Practitioner(

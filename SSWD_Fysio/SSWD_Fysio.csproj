@@ -30,4 +30,9 @@
     <ProjectReference Include="..\Infrastructure.EF\Infrastructure.EF.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Intake\" />
+    <Folder Include="Views\PractitionerDashboard\" />
+  </ItemGroup>
+
 </Project>

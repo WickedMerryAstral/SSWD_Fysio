@@ -18,6 +18,7 @@ namespace Infrastructure.EF
         public DbSet<Practitioner> practitioners { get; set; }
         public DbSet<Treatment> treatments { get; set; }
         public DbSet<TreatmentPlan> treatmentPlans { get; set; }
+        public DbSet<AppAccount> accounts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder model)
         {

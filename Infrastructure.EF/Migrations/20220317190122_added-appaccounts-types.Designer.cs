@@ -4,6 +4,7 @@ using Infrastructure.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.EF.Migrations
 {
     [DbContext(typeof(FysioDBContext))]
-    partial class FysioDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220317190122_added-appaccounts-types")]
+    partial class addedappaccountstypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +36,9 @@ namespace Infrastructure.EF.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("mail")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("password")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("accountId");
@@ -51,7 +55,6 @@ namespace Infrastructure.EF.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("commentId"), 1L, 1);
 
                     b.Property<string>("content")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("patientFileId")
@@ -90,11 +93,9 @@ namespace Infrastructure.EF.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("mail")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("patientFileId")
@@ -186,7 +187,6 @@ namespace Infrastructure.EF.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("mail")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("name")

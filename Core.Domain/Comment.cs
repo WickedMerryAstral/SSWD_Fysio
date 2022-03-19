@@ -12,19 +12,27 @@ namespace Core.Domain
         // Identifiers
         [Key]
         public int commentId { get; set; }
+
+        [Required]
         public int practitionerId { get; set; }
+
+        [Required]
         public int patientFileId { get; set; }
 
         // Info
         public DateTime postDate { get; set; }
+
+        [Required]
         public bool visible { get; set; }
+
+        [Required]
         public string content { get; set; }
 
-        public Comment(int practitionerId, int patientFileId, DateTime postDate, bool visible, string content)
+        public Comment(int practitionerId, int patientFileId, bool visible, string content)
         {
             this.practitionerId = practitionerId;
             this.patientFileId = patientFileId;
-            this.postDate = postDate;
+            this.postDate = DateTime.Now;
             this.visible = visible;
             this.content = content;
         }

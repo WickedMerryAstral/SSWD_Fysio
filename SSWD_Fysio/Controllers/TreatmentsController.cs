@@ -7,28 +7,25 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Core.Domain;
 using Infrastructure.EF;
-using Microsoft.AspNetCore.Authorization;
-using SSWD_Fysio.Models;
 
 namespace SSWD_Fysio.Controllers
 {
-    [AllowAnonymous]
-    public class PractitionersController : Controller
+    public class TreatmentsController : Controller
     {
         private readonly FysioDBContext _context;
 
-        public PractitionersController(FysioDBContext context)
+        public TreatmentsController(FysioDBContext context)
         {
             _context = context;
         }
 
-        // GET: Practitioners
+        // GET: Treatments
         public async Task<IActionResult> Index()
         {
-            return View(await _context.practitioners.ToListAsync());
+            return View(await _context.treatments.ToListAsync());
         }
 
-        // GET: Practitioners/Details/5
+        // GET: Treatments/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -36,39 +33,39 @@ namespace SSWD_Fysio.Controllers
                 return NotFound();
             }
 
-            var practitioner = await _context.practitioners
-                .FirstOrDefaultAsync(m => m.practitionerId == id);
-            if (practitioner == null)
+            var treatment = await _context.treatments
+                .FirstOrDefaultAsync(m => m.treatmentId == id);
+            if (treatment == null)
             {
                 return NotFound();
             }
 
-            return View(practitioner);
+            return View(treatment);
         }
 
-        // GET: Practitioners/Create
+        // GET: Treatments/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Practitioners/Create
+        // POST: Treatments/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("practitionerId,type,name,mail,studentNumber,employeeNumber,phone,BIGNumber")] Practitioner practitioner)
+        public async Task<IActionResult> Create([Bind("treatmentId,practitionerId,treatmentPlanId,type,treatmentDate,location")] Treatment treatment)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(practitioner);
+                _context.Add(treatment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(practitioner);
+            return View(treatment);
         }
 
-        // GET: Practitioners/Edit/5
+        // GET: Treatments/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -76,22 +73,22 @@ namespace SSWD_Fysio.Controllers
                 return NotFound();
             }
 
-            var practitioner = await _context.practitioners.FindAsync(id);
-            if (practitioner == null)
+            var treatment = await _context.treatments.FindAsync(id);
+            if (treatment == null)
             {
                 return NotFound();
             }
-            return View(practitioner);
+            return View(treatment);
         }
 
-        // POST: Practitioners/Edit/5
+        // POST: Treatments/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("practitionerId,type,name,mail,studentNumber,employeeNumber,phone,BIGNumber")] Practitioner practitioner)
+        public async Task<IActionResult> Edit(int id, [Bind("treatmentId,practitionerId,treatmentPlanId,type,treatmentDate,location")] Treatment treatment)
         {
-            if (id != practitioner.practitionerId)
+            if (id != treatment.treatmentId)
             {
                 return NotFound();
             }
@@ -100,12 +97,12 @@ namespace SSWD_Fysio.Controllers
             {
                 try
                 {
-                    _context.Update(practitioner);
+                    _context.Update(treatment);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PractitionerExists(practitioner.practitionerId))
+                    if (!TreatmentExists(treatment.treatmentId))
                     {
                         return NotFound();
                     }
@@ -116,10 +113,10 @@ namespace SSWD_Fysio.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(practitioner);
+            return View(treatment);
         }
 
-        // GET: Practitioners/Delete/5
+        // GET: Treatments/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -127,30 +124,30 @@ namespace SSWD_Fysio.Controllers
                 return NotFound();
             }
 
-            var practitioner = await _context.practitioners
-                .FirstOrDefaultAsync(m => m.practitionerId == id);
-            if (practitioner == null)
+            var treatment = await _context.treatments
+                .FirstOrDefaultAsync(m => m.treatmentId == id);
+            if (treatment == null)
             {
                 return NotFound();
             }
 
-            return View(practitioner);
+            return View(treatment);
         }
 
-        // POST: Practitioners/Delete/5
+        // POST: Treatments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var practitioner = await _context.practitioners.FindAsync(id);
-            _context.practitioners.Remove(practitioner);
+            var treatment = await _context.treatments.FindAsync(id);
+            _context.treatments.Remove(treatment);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool PractitionerExists(int id)
+        private bool TreatmentExists(int id)
         {
-            return _context.practitioners.Any(e => e.practitionerId == id);
+            return _context.treatments.Any(e => e.treatmentId == id);
         }
     }
 }

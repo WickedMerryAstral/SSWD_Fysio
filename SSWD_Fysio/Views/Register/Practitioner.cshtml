@@ -1,0 +1,59 @@
+﻿@model SSWD_Fysio.Models.PractitionerRegisterViewModel
+@{
+    ViewData["Title"] = "Registering as practitioner";
+}
+
+<div class="text-center">
+    <h2>Registering as practitioner</h2>
+        <div class="col-md-4">
+
+        <form asp-action="Practitioner">
+           <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="mail" class="control-label"></label>
+                <input asp-for="mail" class="form-control"/>
+                <span asp-validation-for="mail" class="text-danger"></span>
+            </div>
+           <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="password" class="control-label"></label>
+                <input name="password" asp-for="password" class="form-control"/>
+                <span asp-validation-for="password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="name" class="control-label"></label>
+                <input asp-for="name" class="form-control" />
+                <span asp-validation-for="name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Are you a student or teacher?</label>
+                <select asp-for="chosenType" class="form-control"
+                    asp-items="@(new SelectList(Model.typeOptions))">
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Employee / Student Nr.</label>
+                <input asp-for="number" class="form-control" />
+                <span asp-validation-for="number" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="phone" class="control-label"></label>
+                <input asp-for="phone" class="form-control" />
+                <span asp-validation-for="phone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">BIG Number (Only applies to Teacher.)</label>
+                <input asp-for="BIGnumber" class="form-control" />
+                <span asp-validation-for="BIGnumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="button" value="Back" onclick="location.href='@Url.Action("Index", "Register")'" />
+            </div>
+        </form>
+    </div>
+</div>
