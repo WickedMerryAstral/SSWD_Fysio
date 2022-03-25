@@ -31,7 +31,7 @@ namespace Infrastructure.EF
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Patient> GetPatients()
+        public List<Patient> GetPatients()
         {
             throw new NotImplementedException();
         }

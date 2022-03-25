@@ -16,7 +16,6 @@ namespace Core.Domain
         [Required]
         public string mail { get; set; }
 
-        [Required]
         public AccountType accountType { get; set; }
 
         public AppAccount() {

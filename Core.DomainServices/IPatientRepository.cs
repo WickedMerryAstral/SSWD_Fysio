@@ -12,6 +12,6 @@ namespace Core.DomainServices
         public int AddPatient(Patient patient);
         public Patient FindPatientById(int id);
         public int DeletePatientById(int id);
-        public IEnumerable<Patient> GetPatients();
+        public List<Patient> GetPatients();
     }
 }

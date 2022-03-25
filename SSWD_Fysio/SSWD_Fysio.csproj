@@ -31,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Intake\" />
     <Folder Include="Views\PractitionerDashboard\" />
   </ItemGroup>
 

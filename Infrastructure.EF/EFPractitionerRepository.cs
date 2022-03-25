@@ -28,9 +28,23 @@ namespace Infrastructure.EF
             context.Remove(GetPractitionerById(id));
         }
 
+        public List<Practitioner> getAllPractitioners()
+        {
+            return context.practitioners.ToList();
+        }
+
+        public List<Practitioner> getAllSupervisors()
+        {
+            return context.practitioners.Where(p => p.type == PractitionerType.TEACHER).ToList();
+        }
+
         public Practitioner GetPractitionerById(int id)
         {
             return context.practitioners.Where(p => p.practitionerId == id).FirstOrDefault();
+        }
+
+        public Practitioner GetPractitionerByEmail(string mail) {
+            return context.practitioners.Where(p => p.mail == mail).First();
         }
     }
 }

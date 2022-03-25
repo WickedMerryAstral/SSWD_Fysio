@@ -38,9 +38,9 @@ namespace Infrastructure.EF
             return context.patientFiles.Where(p => p.patientFileId == id).FirstOrDefault();
         }
 
-        public IEnumerable<PatientFile> GetPatientFiles()
+        public List<PatientFile> GetPatientFiles()
         {
-            return this.context.patientFiles;
+            return this.context.patientFiles.ToList();
         }
         public Patient GetPatientFromFile(PatientFile patientFile)
         {

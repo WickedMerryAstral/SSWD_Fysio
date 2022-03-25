@@ -14,7 +14,7 @@ namespace Core.DomainServices
         public Patient GetPatientFromFile(PatientFile patientFile);
         public Patient GetPatientFromFileId(int id);
         public void DeletePatientFile(int id);
-        public IEnumerable<PatientFile> GetPatientFiles();
+        public List<PatientFile> GetPatientFiles();
 
     }
 }

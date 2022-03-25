@@ -1,0 +1,114 @@
+﻿@model SSWD_Fysio.Models.IntakeViewModel
+
+@{
+    ViewData["Title"] = "Intake Patient";
+}
+
+<h1>Intake form</h1>
+
+<hr />
+<div class="column">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <h2>Patient Details</h2>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="name" class="control-label"></label>
+                <input asp-for="name" class="form-control" />
+                <span asp-validation-for="name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="mail" class="control-label"></label>
+                <input asp-for="mail" class="form-control" />
+                <span asp-validation-for="mail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="phone" class="control-label"></label>
+                <input asp-for="phone" class="form-control" />
+                <span asp-validation-for="phone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="birthDate" class="control-label"></label>
+                <input asp-for="birthDate" class="form-control" />
+                <span asp-validation-for="birthDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Is the patient a teacher or student?</label>
+                <select asp-for="chosenType" class="form-control"
+                    asp-items="@(new SelectList(Model.patientTypes))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Sex</label>
+                <select asp-for="chosenSex" class="form-control"
+                    asp-items="@(new SelectList(Model.sexOptions))">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Student / Employee Number</label>
+                <input asp-for="number" class="form-control" />
+                <span asp-validation-for="number" class="text-danger"></span>
+            </div>
+
+            <h2>Treatment</h2>
+            <hr />
+            <div class="form-group">
+                <label class="control-label">Diagnose</label>
+                <select asp-for="chosenCode" class="form-control"
+                    asp-items="@(new SelectList(Model.diagnosisCodes))">
+                </select>
+            </div>
+            <div class="form-group">
+                 <label asp-for="chosenMainPractitioner" class="control-label">Main practitioner</label>
+                 <select asp-for="chosenMainPractitioner" class ="form-control" asp-items="ViewBag.Practitioners">
+                 </select>
+                 <span asp-validation-for="chosenMainPractitioner" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                 <label asp-for="chosenIntaker" class="control-label">Intake done by</label>
+                 <select asp-for="chosenIntaker" class ="form-control" asp-items="ViewBag.Practitioners">
+                 </select>
+                 <span asp-validation-for="chosenIntaker" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                 <label class="control-label">Supervised under</label>
+                 <select asp-for="chosenSupervisor" class ="form-control" asp-items="ViewBag.Supervisors">
+                 </select>
+                 <span asp-validation-for="chosenSupervisor" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Complaint</label>
+                <input asp-for="mainComplaint" class="form-control" />
+                <span asp-validation-for="mainComplaint" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Weekly sessions</label>
+                <input asp-for="weeklySessions" class="form-control" />
+                <span asp-validation-for="weeklySessions" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Session duration</label>
+                <input asp-for="sessionDuration" class="form-control" />
+                <span asp-validation-for="sessionDuration" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Discharge date</label>
+                <input asp-for="dischargeDate" class="form-control" />
+                <span asp-validation-for="dischargeDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

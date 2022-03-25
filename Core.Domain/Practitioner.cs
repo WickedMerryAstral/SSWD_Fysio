@@ -16,6 +16,8 @@ namespace Core.Domain
 
         // Info
         public PractitionerType type { get; set; }
+
+        [Display]
         public string name { get; set; }
 
         [Required]

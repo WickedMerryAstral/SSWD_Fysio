@@ -22,5 +22,29 @@ namespace Infrastructure.EF
             context.SaveChanges();
             return account.accountId;
         }
+
+        // System temp data types
+        // Practitioners : 1
+        // Patients : 2
+        // None found: 400
+        public int GetAccountType(string mail) {
+            if (context.practitioners.Where(p => p.mail == mail).Any()){
+                return 1;
+            }
+            if (context.patients.Where(p => p.mail == mail).Any()) {
+                return 2;
+            }
+            return 400;
+        }
+
+        public bool isEmailAvailable(string mail) {
+            if (context.accounts.Where(a => a.mail == mail).Any())
+            {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
     }
 }

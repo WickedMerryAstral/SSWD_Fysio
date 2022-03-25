@@ -8,8 +8,8 @@ namespace Core.DomainServices
     {
         public int AddTreatment(Treatment treatment);
         public Treatment FindTreatmentById(int id);
-        public IEnumerable<Treatment> FindTreatmentsByTreatmentPlan(int planId);
-        public IEnumerable<Treatment> FindTreatmentsByPractitioner(int practitionerId);
+        public List<Treatment> FindTreatmentsByTreatmentPlan(int planId);
+        public List<Treatment> FindTreatmentsByPractitioner(int practitionerId);
         public int DeleteTreatmentById(int id);
     }
 }

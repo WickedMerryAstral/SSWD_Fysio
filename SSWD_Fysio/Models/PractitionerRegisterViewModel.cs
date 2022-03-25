@@ -1,12 +1,16 @@
 ﻿using Core.Domain;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SSWD_Fysio.Models
 {
     public class PractitionerRegisterViewModel
     {
         // Account
+        [Required]
         public string mail { get; set; }
+
+        [Required]
         public string password { get; set; }
 
         // Practitioner
@@ -15,6 +19,7 @@ namespace SSWD_Fysio.Models
 
 
         // Teacher only
+        // Add conditional validation later
         public string phone { get; set; }
         public string BIGnumber { get; set; }
 
@@ -22,7 +27,6 @@ namespace SSWD_Fysio.Models
         // List
         public List<string> typeOptions { get; set; }
         public string chosenType { get; set; }
-
 
         public PractitionerRegisterViewModel() {
             typeOptions = new List<string>();

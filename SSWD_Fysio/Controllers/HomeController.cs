@@ -23,16 +23,20 @@ namespace SSWD_Fysio.Controllers
         private IPractitionerRepository practitionerRepo;
         private ITreatmentPlanRepository planRepo;
         private ITreatmentRepository treatmentRepo;
+        private IAppAccountRepository appAccRepo;
 
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger,
+        public HomeController(
+            ILogger<HomeController> logger,
+            IAppAccountRepository app,
             IPatientFileRepository file,
             IPatientRepository patient,
             IPractitionerRepository practitioner,
             ITreatmentPlanRepository plan,
             ITreatmentRepository treatment)
         {
+            appAccRepo = app;
             fileRepo = file;
             patientRepo = patient;
             practitionerRepo = practitioner;
@@ -81,6 +85,15 @@ namespace SSWD_Fysio.Controllers
                 "0612345678",
                 "B00001");
 
+            Practitioner pr2 = new Practitioner(
+                PractitionerType.STUDENT,
+                "Jane Doe",
+                "John@johnmail.com",
+                null,
+                "00002",
+                "0612345678",
+                "B00001");
+
             // PatientFile, initializing Lists within constructor
             PatientFile pf1 = new PatientFile(
                 pr1.practitionerId,
@@ -91,7 +104,11 @@ namespace SSWD_Fysio.Controllers
                 DateTime.Now
                 );
 
+            pf1.patient.name = "Patient";
+            pf1.patient.mail = "PatientMail@Mail.com";
+
             practitionerRepo.AddPractitioner(pr1);
+            practitionerRepo.AddPractitioner(pr2);
             fileRepo.AddPatientFile(pf1);
         }
     }

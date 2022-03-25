@@ -31,12 +31,12 @@ namespace Infrastructure.EF
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Treatment> FindTreatmentsByPractitioner(int practitionerId)
+        public List<Treatment> FindTreatmentsByPractitioner(int practitionerId)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Treatment> FindTreatmentsByTreatmentPlan(int planId)
+        public List<Treatment> FindTreatmentsByTreatmentPlan(int planId)
         {
             throw new NotImplementedException();
         }
