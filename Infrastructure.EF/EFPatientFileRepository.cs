@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Core.Domain;
 using Core.DomainServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.EF
 {
@@ -35,16 +36,28 @@ namespace Infrastructure.EF
 
         public PatientFile FindPatientFileById(int id)
         {
-            return context.patientFiles.Where(p => p.patientFileId == id).FirstOrDefault();
+            return context.patientFiles
+                .Include(pf => pf.patient)
+                .Include(pf => pf.treatmentPlan)
+                .Where(pf => pf.patientFileId == id)
+                .FirstOrDefault();
+        }
+
+        public List<PatientFile> FindPatientFilesByPractitionerId(int practitionerId)
+        {
+            return context.patientFiles.Where(pf => pf.treatmentPlan.practitionerId == practitionerId).ToList();
         }
 
         public List<PatientFile> GetPatientFiles()
         {
-            return this.context.patientFiles.ToList();
+            return this.context.patientFiles
+                .Include(pf => pf.patient)
+                .Include(pf => pf.treatmentPlan)
+                .ToList();
         }
         public Patient GetPatientFromFile(PatientFile patientFile)
         {
-            throw new NotImplementedException();
+            return context.patients.Where(p => p.patientFileId == patientFile.patientFileId).FirstOrDefault();
         }
 
         public Patient GetPatientFromFileId(int id)

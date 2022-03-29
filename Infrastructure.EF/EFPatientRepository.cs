@@ -18,7 +18,9 @@ namespace Infrastructure.EF
 
         public int AddPatient(Patient patient)
         {
-            throw new NotImplementedException();
+            context.patients.Add(patient);
+            context.SaveChanges();
+            return patient.patientId;
         }
 
         public int DeletePatientById(int id)
@@ -28,7 +30,12 @@ namespace Infrastructure.EF
 
         public Patient FindPatientById(int id)
         {
-            throw new NotImplementedException();
+            return context.patients.Where(p => p.patientId == id).FirstOrDefault();
+        }
+
+        public Patient FindPatientByMail(string mail)
+        {
+            return context.patients.Where(p => p.mail == mail).FirstOrDefault();
         }
 
         public List<Patient> GetPatients()

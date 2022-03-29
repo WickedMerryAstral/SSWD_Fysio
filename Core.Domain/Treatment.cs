@@ -12,10 +12,8 @@ namespace Core.Domain
         // Identifiers
         [Key]
         public int treatmentId { get; set; }
-
         [Required]
         public int practitionerId { get; set; }
-
         [Required]
         public int treatmentPlanId { get; set; }
 
@@ -26,7 +24,7 @@ namespace Core.Domain
         public DateTime treatmentDate { get; set; }
         public string location { get; set; }
 
-        public Treatment(int practitionerId, int treatmentPlanId, string type, DateTime treatmentDate, string location)
+        public Treatment(int practitionerId, int treatmentPlanId, string type, DateTime treatmentDate, string location, int patientId, string patientName)
         {
             this.practitionerId = practitionerId;
             this.treatmentPlanId = treatmentPlanId;

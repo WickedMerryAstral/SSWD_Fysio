@@ -10,5 +10,6 @@ namespace Core.DomainServices
     public interface IAppAccountRepository
     {
         public int AddAppAccount(AppAccount appaccount);
+        public AppAccount FindAccountByMail(string email);
     }
 }

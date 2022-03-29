@@ -47,10 +47,19 @@ namespace SSWD_Fysio.Controllers
 
         public IActionResult Index()
         {
-            // Test Code Area
-            // FillData();
+            TempData["ACCOUNT_MAIL"] = "John@johnmail.com";
+            TempData.Keep();
 
-            return View();
+            HomeViewModel vm = new HomeViewModel();
+            vm.practitionerBar.amountOfAppointments = 3;
+            vm.practitionerBar.isPractitioner = true;
+
+            // Test Code Area
+            if (practitionerRepo.getAllSupervisors().Count() == 0) {
+                FillData();
+            }
+
+            return View(vm);
         }
 
         public IActionResult Privacy()
@@ -88,7 +97,7 @@ namespace SSWD_Fysio.Controllers
             Practitioner pr2 = new Practitioner(
                 PractitionerType.STUDENT,
                 "Jane Doe",
-                "John@johnmail.com",
+                "Jane@janemail.com",
                 null,
                 "00002",
                 "0612345678",
@@ -104,12 +113,47 @@ namespace SSWD_Fysio.Controllers
                 DateTime.Now
                 );
 
-            pf1.patient.name = "Patient";
-            pf1.patient.mail = "PatientMail@Mail.com";
-
             practitionerRepo.AddPractitioner(pr1);
             practitionerRepo.AddPractitioner(pr2);
+
+            pf1.patient = new Patient("00001",
+                null,
+                "Patience",
+                "patient@patientmail.com",
+                null,
+                DateTime.ParseExact("1990-03-21 13:26", "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture),
+                Sex.OTHER,
+                PatientType.STUDENT);
+
+            pf1.treatmentPlan = new TreatmentPlan(pr1.practitionerId,
+                "Alpha",
+                "Ouch",
+                1,
+                60);
+
+            pf1.intakeByPractitionerId = pr1.practitionerId;
+            pf1.supervisedBypractitionerId = pr1.practitionerId;
+
             fileRepo.AddPatientFile(pf1);
+
+            AppAccount practitionerAcc1 = new AppAccount();
+            practitionerAcc1.practitionerId = pr1.practitionerId;
+            practitionerAcc1.mail = pr1.mail;
+            practitionerAcc1.accountType = AccountType.PRACTITIONER;
+
+            AppAccount practitionerAcc2 = new AppAccount();
+            practitionerAcc2.practitionerId = pr2.practitionerId;
+            practitionerAcc2.mail = pr2.mail;
+            practitionerAcc2.accountType = AccountType.PRACTITIONER;
+
+            appAccRepo.AddAppAccount(practitionerAcc1);
+            appAccRepo.AddAppAccount(practitionerAcc2);
+
+            //AppAccount patientAcc1 = new AppAccount();
+            //patientAcc1.patientId = pf1.patient.patientId;
+            //patientAcc1.mail = pf1.patient.mail;
+            //patientAcc1.accountType = AccountType.PATIENT;
+            // appAccRepo.AddAppAccount(patientAcc1);
         }
     }
 }

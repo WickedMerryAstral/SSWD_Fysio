@@ -8,7 +8,7 @@ namespace Infrastructure.EF
 {
     public class FysioDBContext : DbContext
     {
-        public FysioDBContext(DbContextOptions options) : base(options)
+        public FysioDBContext(DbContextOptions<FysioDBContext> options) : base(options)
         {
         }
 
@@ -61,6 +61,10 @@ namespace Infrastructure.EF
             #endregion
 
             #region MANUAL CONSTRAINTS
+
+            #region APP ACCOUNTS
+            model.Entity<AppAccount>().HasIndex(a => a.mail).IsUnique();
+            #endregion
 
             #region PATIENTS
             #endregion

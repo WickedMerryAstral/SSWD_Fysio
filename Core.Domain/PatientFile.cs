@@ -12,15 +12,17 @@ namespace Core.Domain
         // Identifiers
         [Key]
         public int patientFileId { get; set; }
-        public int patientId { get; set; }
+        // public int patientId { get; set; }
         public Patient patient { get; set; }
-        public int treatmentPlanId { get; set; }
+        // public int treatmentPlanId { get; set; }
         public TreatmentPlan treatmentPlan { get; set; }
+        [Required]
         public int intakeByPractitionerId { get; set; }
         public int supervisedBypractitionerId { get; set; }
         public List<Comment> comments { get; set; }
 
         // Info
+        [Required]
         public DateTime birthDate { get; set; }
         public PatientFileType type { get; set; }
         public DateTime registerDate { get; set; }

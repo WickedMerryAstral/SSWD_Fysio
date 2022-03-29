@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Account";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Register</h1>
+    <p>As a patient, please use the e-mail address you have submitted during your intake.</p>
+    <input type="button" value="Patient" onclick="location.href='@Url.Action("RegisterPatient", "Account")'" />
+    <input type="button" value="Practitioner" onclick="location.href='@Url.Action("RegisterPractitioner", "Account")'" />
+
+    <p>Already have an account? <a href="location.href='@Url.Action("Index", "Account")'">Log in instead.</a></p>
+
+    <div class="row">
+    <div class="col-md-4">
+    </div>
+</div>
+</div>

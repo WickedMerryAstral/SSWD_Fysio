@@ -23,11 +23,9 @@ namespace Core.Domain
         // Duration is measured in minutes.
         public int sessionDuration { get; set; }
 
-        public TreatmentPlan(int practitionerId, int patientFileId, List<Treatment> treatments, string diagnosis, string complaint, int weeklySessions, int sessionDuration)
+        public TreatmentPlan(int practitionerId, string diagnosis, string complaint, int weeklySessions, int sessionDuration)
         {
-            this.patientFileId = patientFileId;
             this.practitionerId = practitionerId;
-            this.treatments = treatments;
             this.diagnosis = diagnosis;
             this.complaint = complaint;
             this.weeklySessions = weeklySessions;

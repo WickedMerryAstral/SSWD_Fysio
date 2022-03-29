@@ -1,6 +1,11 @@
-﻿@{
+﻿@model HomeViewModel
+@{
     ViewData["Title"] = "Home Page";
 }
+
+<div>
+    <partial name="_PractitionerBarPartialView" model="Model.practitionerBar"></partial>
+</div>
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>

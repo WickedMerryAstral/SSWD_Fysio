@@ -10,25 +10,37 @@ namespace Infrastructure.EF.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "patients",
+                name: "accounts",
                 columns: table => new
                 {
-                    patientId = table.Column<int>(type: "int", nullable: false)
+                    accountId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    patientFileId = table.Column<int>(type: "int", nullable: false),
-                    studentNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    employeeNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    mail = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    photoURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    age = table.Column<int>(type: "int", nullable: false),
-                    sex = table.Column<int>(type: "int", nullable: false),
-                    type = table.Column<int>(type: "int", nullable: false)
+                    mail = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    accountType = table.Column<int>(type: "int", nullable: false),
+                    patientId = table.Column<int>(type: "int", nullable: false),
+                    practitionerId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_patients", x => x.patientId);
+                    table.PrimaryKey("PK_accounts", x => x.accountId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "patientFiles",
+                columns: table => new
+                {
+                    patientFileId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    intakeByPractitionerId = table.Column<int>(type: "int", nullable: false),
+                    supervisedBypractitionerId = table.Column<int>(type: "int", nullable: false),
+                    birthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    type = table.Column<int>(type: "int", nullable: false),
+                    registerDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    dischargeDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_patientFiles", x => x.patientFileId);
                 });
 
             migrationBuilder.CreateTable(
@@ -39,7 +51,7 @@ namespace Infrastructure.EF.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     type = table.Column<int>(type: "int", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    mail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    mail = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     studentNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     employeeNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -48,6 +60,57 @@ namespace Infrastructure.EF.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_practitioners", x => x.practitionerId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "comments",
+                columns: table => new
+                {
+                    commentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    practitionerId = table.Column<int>(type: "int", nullable: false),
+                    patientFileId = table.Column<int>(type: "int", nullable: false),
+                    postDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    visible = table.Column<bool>(type: "bit", nullable: false),
+                    content = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_comments", x => x.commentId);
+                    table.ForeignKey(
+                        name: "FK_comments_patientFiles_patientFileId",
+                        column: x => x.patientFileId,
+                        principalTable: "patientFiles",
+                        principalColumn: "patientFileId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "patients",
+                columns: table => new
+                {
+                    patientId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    patientFileId = table.Column<int>(type: "int", nullable: false),
+                    studentNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    employeeNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    mail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    photo = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    age = table.Column<int>(type: "int", nullable: false),
+                    sex = table.Column<int>(type: "int", nullable: false),
+                    type = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_patients", x => x.patientId);
+                    table.ForeignKey(
+                        name: "FK_patients_patientFiles_patientFileId",
+                        column: x => x.patientFileId,
+                        principalTable: "patientFiles",
+                        principalColumn: "patientFileId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -66,38 +129,12 @@ namespace Infrastructure.EF.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_treatmentPlans", x => x.treatmentPlanId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "patientFiles",
-                columns: table => new
-                {
-                    patientFileId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    patientId = table.Column<int>(type: "int", nullable: false),
-                    patientId1 = table.Column<int>(type: "int", nullable: true),
-                    treatmentPlanId = table.Column<int>(type: "int", nullable: false),
-                    treatmentPlanId1 = table.Column<int>(type: "int", nullable: true),
-                    intakeByPractitionerId = table.Column<int>(type: "int", nullable: false),
-                    supervisedBypractitionerId = table.Column<int>(type: "int", nullable: false),
-                    birthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    type = table.Column<int>(type: "int", nullable: false),
-                    registerDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    dischargeDate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_patientFiles", x => x.patientFileId);
                     table.ForeignKey(
-                        name: "FK_patientFiles_patients_patientId1",
-                        column: x => x.patientId1,
-                        principalTable: "patients",
-                        principalColumn: "patientId");
-                    table.ForeignKey(
-                        name: "FK_patientFiles_treatmentPlans_treatmentPlanId1",
-                        column: x => x.treatmentPlanId1,
-                        principalTable: "treatmentPlans",
-                        principalColumn: "treatmentPlanId");
+                        name: "FK_treatmentPlans_patientFiles_patientFileId",
+                        column: x => x.patientFileId,
+                        principalTable: "patientFiles",
+                        principalColumn: "patientFileId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -129,28 +166,11 @@ namespace Infrastructure.EF.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "comments",
-                columns: table => new
-                {
-                    commentId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    practitionerId = table.Column<int>(type: "int", nullable: false),
-                    patientFileId = table.Column<int>(type: "int", nullable: false),
-                    postDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    visible = table.Column<bool>(type: "bit", nullable: false),
-                    content = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_comments", x => x.commentId);
-                    table.ForeignKey(
-                        name: "FK_comments_patientFiles_patientFileId",
-                        column: x => x.patientFileId,
-                        principalTable: "patientFiles",
-                        principalColumn: "patientFileId",
-                        onDelete: ReferentialAction.Cascade);
-                });
+            migrationBuilder.CreateIndex(
+                name: "IX_accounts_mail",
+                table: "accounts",
+                column: "mail",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_comments_commentId",
@@ -168,14 +188,10 @@ namespace Infrastructure.EF.Migrations
                 column: "patientFileId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_patientFiles_patientId1",
-                table: "patientFiles",
-                column: "patientId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_patientFiles_treatmentPlanId1",
-                table: "patientFiles",
-                column: "treatmentPlanId1");
+                name: "IX_patients_patientFileId",
+                table: "patients",
+                column: "patientFileId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_patients_patientId",
@@ -186,6 +202,12 @@ namespace Infrastructure.EF.Migrations
                 name: "IX_practitioners_practitionerId",
                 table: "practitioners",
                 column: "practitionerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_treatmentPlans_patientFileId",
+                table: "treatmentPlans",
+                column: "patientFileId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_treatmentPlans_treatmentPlanId",
@@ -211,22 +233,25 @@ namespace Infrastructure.EF.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "accounts");
+
+            migrationBuilder.DropTable(
                 name: "comments");
-
-            migrationBuilder.DropTable(
-                name: "treatments");
-
-            migrationBuilder.DropTable(
-                name: "patientFiles");
-
-            migrationBuilder.DropTable(
-                name: "practitioners");
 
             migrationBuilder.DropTable(
                 name: "patients");
 
             migrationBuilder.DropTable(
+                name: "treatments");
+
+            migrationBuilder.DropTable(
+                name: "practitioners");
+
+            migrationBuilder.DropTable(
                 name: "treatmentPlans");
+
+            migrationBuilder.DropTable(
+                name: "patientFiles");
         }
     }
 }

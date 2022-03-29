@@ -1,0 +1,52 @@
+﻿@model PractitionerDashboardViewModel
+
+<partial name="_PractitionerBarPartialView" model="Model.practitionerBar"/>
+<md-container>
+    <md-title>Your patients</md-title>
+    <div class="table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Patient ID</th>
+                    <th>Diagnosis</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pf in Model.practitionerFiles)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => pf.patient.name)</td>
+                        <td>@Html.DisplayFor(modelItem => pf.patient.patientId)</td>
+                        <td>@Html.DisplayFor(modelItem => pf.treatmentPlan.diagnosis)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <input type="button" value="Intake Patient" onclick="location.href='@Url.Action("Index", "Intake")'" />
+
+
+    <md-title>Today's appointments</md-title>
+    <div class="table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Patient</th>
+                    <th>Treatment</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pt in Model.patientTreatments)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => pt.treatmentDate)</td>
+                        <td>@Html.DisplayFor(modelItem => pt.patientName)</td>
+                        <td>@Html.DisplayFor(modelItem => pt.treatmentCode)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</md-container>

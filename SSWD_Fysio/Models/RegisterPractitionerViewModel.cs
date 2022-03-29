@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SSWD_Fysio.Models
 {
-    public class PractitionerRegisterViewModel
+    public class RegisterPractitionerViewModel
     {
         // Account
         [Required]
@@ -28,7 +28,7 @@ namespace SSWD_Fysio.Models
         public List<string> typeOptions { get; set; }
         public string chosenType { get; set; }
 
-        public PractitionerRegisterViewModel() {
+        public RegisterPractitionerViewModel() {
             typeOptions = new List<string>();
             typeOptions.Add("Student");
             typeOptions.Add("Teacher");

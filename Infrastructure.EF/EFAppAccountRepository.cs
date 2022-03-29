@@ -18,23 +18,17 @@ namespace Infrastructure.EF
 
         public int AddAppAccount(AppAccount account)
         {
-            context.accounts.Add(account);
-            context.SaveChanges();
-            return account.accountId;
+            if (context.accounts.Where(ac => ac.mail == account.mail).Any()) {
+                context.accounts.Add(account);
+                context.SaveChanges();
+                return account.accountId;
+            }
+            return -500;
         }
 
-        // System temp data types
-        // Practitioners : 1
-        // Patients : 2
-        // None found: 400
-        public int GetAccountType(string mail) {
-            if (context.practitioners.Where(p => p.mail == mail).Any()){
-                return 1;
-            }
-            if (context.patients.Where(p => p.mail == mail).Any()) {
-                return 2;
-            }
-            return 400;
+        public AppAccount FindAccountByMail(string email)
+        {
+            return context.accounts.Where(acc => acc.mail == email).FirstOrDefault();
         }
 
         public bool isEmailAvailable(string mail) {

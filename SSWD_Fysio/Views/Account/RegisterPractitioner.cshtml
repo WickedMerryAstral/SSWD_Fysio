@@ -1,4 +1,4 @@
-﻿@model SSWD_Fysio.Models.PractitionerRegisterViewModel
+﻿@model SSWD_Fysio.Models.RegisterPractitionerViewModel
 @{
     ViewData["Title"] = "Registering as practitioner";
 }
@@ -52,7 +52,7 @@
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
-                <input type="button" value="Back" onclick="location.href='@Url.Action("Index", "Register")'" />
+                <input type="button" value="Back" onclick="location.href='@Url.Action("Index", "Account")'" />
             </div>
         </form>
     </div>

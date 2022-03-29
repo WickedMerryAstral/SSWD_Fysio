@@ -11,6 +11,7 @@ namespace Core.DomainServices
     {
         public int AddPatientFile(PatientFile patientFile);
         public PatientFile FindPatientFileById(int id);
+        public List<PatientFile> FindPatientFilesByPractitionerId(int practitionerId);
         public Patient GetPatientFromFile(PatientFile patientFile);
         public Patient GetPatientFromFileId(int id);
         public void DeletePatientFile(int id);

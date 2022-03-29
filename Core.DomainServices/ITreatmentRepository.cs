@@ -10,6 +10,8 @@ namespace Core.DomainServices
         public Treatment FindTreatmentById(int id);
         public List<Treatment> FindTreatmentsByTreatmentPlan(int planId);
         public List<Treatment> FindTreatmentsByPractitioner(int practitionerId);
+        public List<Treatment> GetTreatmentsByPractitionerId(int practitionerId);
+        public int GetTodaysTreatmentsCount(int practitionerId);
         public int DeleteTreatmentById(int id);
     }
 }

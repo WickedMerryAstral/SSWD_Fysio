@@ -14,29 +14,31 @@ namespace Core.Domain
         [Key]
         public int patientId { get; set; }
         public int patientFileId { get; set; }
-
+        
         // Info
         public string studentNumber { get; set; }
         public string employeeNumber { get; set; }
 
+        [Required]
         public string name { get; set; }
+
+        [Required]
         public string mail { get; set; }
         public string phone { get; set; }
-        public string photoURL { get; set; }
+        public byte[] photo { get; set; }
         public int age { get; set; }
         public Sex sex { get; set; }
 
         // Might not use this. Check again later.
         public PatientType type { get; set; }
 
-        public Patient(string studentNumber, string employeeNumber, string name, string mail, string phone, string photoURL, DateTime birthDate, Sex sex, PatientType type)
+        public Patient(string studentNumber, string employeeNumber, string name, string mail, string phone, DateTime birthDate, Sex sex, PatientType type)
         {
             this.studentNumber = studentNumber;
             this.employeeNumber = employeeNumber;
             this.name = name;
             this.mail = mail;
             this.phone = phone;
-            this.photoURL = photoURL;
             this.age = CalculateAge(birthDate);
             this.sex = sex;
             this.type = type;

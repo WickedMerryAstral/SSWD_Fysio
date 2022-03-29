@@ -40,5 +40,17 @@ namespace Infrastructure.EF
         {
             throw new NotImplementedException();
         }
+
+        public int GetTodaysTreatmentsCount(int practitionerId)
+        {
+            return context.treatments.Where(t =>
+            t.practitionerId == practitionerId
+            && t.treatmentDate == DateTime.Today).Count();
+        }
+
+        public List<Treatment> GetTreatmentsByPractitionerId(int practitionerId)
+        {
+            return context.treatments.Where(t => t.practitionerId == practitionerId).ToList();
+        }
     }
 }

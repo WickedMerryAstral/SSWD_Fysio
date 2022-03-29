@@ -17,6 +17,8 @@ namespace Core.Domain
         public string mail { get; set; }
 
         public AccountType accountType { get; set; }
+        public int patientId { get; set; }
+        public int practitionerId { get; set; }
 
         public AppAccount() {
 

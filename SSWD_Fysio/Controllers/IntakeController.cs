@@ -42,8 +42,6 @@ namespace SSWD_Fysio.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            SetUser();
-
             IntakeViewModel model = new IntakeViewModel();
 
             // Codes for debugging
@@ -112,11 +110,6 @@ namespace SSWD_Fysio.Controllers
             file.treatmentPlan.practitionerId = model.chosenMainPractitioner;
 
             return View();
-        }
-
-        public void SetUser() {
-            TempData["ACCOUNT_MAIL"] = "test@testmail.com";
-            TempData["ACCOUNT_TYPE"] = "1";
         }
     }
 }
