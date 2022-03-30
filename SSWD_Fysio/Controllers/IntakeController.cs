@@ -109,7 +109,9 @@ namespace SSWD_Fysio.Controllers
             file.intakeByPractitionerId = model.chosenIntaker;
             file.treatmentPlan.practitionerId = model.chosenMainPractitioner;
 
-            return View();
+            fileRepo.AddPatientFile(file);
+
+            return View("Index");
         }
     }
 }

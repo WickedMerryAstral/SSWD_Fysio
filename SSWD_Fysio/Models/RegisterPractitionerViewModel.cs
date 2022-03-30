@@ -8,30 +8,28 @@ namespace SSWD_Fysio.Models
     {
         // Account
         [Required]
+        [EmailAddress]
         public string mail { get; set; }
 
         [Required]
+        [DataType(DataType.Password)]
         public string password { get; set; }
 
         // Practitioner
+        [Required]
         public string name { get; set; }
-        public string number { get; set; }
 
+        [Required]
+        public string number { get; set; }
+        public string chosenType { get; set; }
 
         // Teacher only
         // Add conditional validation later
         public string phone { get; set; }
         public string BIGnumber { get; set; }
 
-
-        // List
-        public List<string> typeOptions { get; set; }
-        public string chosenType { get; set; }
-
         public RegisterPractitionerViewModel() {
-            typeOptions = new List<string>();
-            typeOptions.Add("Student");
-            typeOptions.Add("Teacher");
+
         }
     }
 }

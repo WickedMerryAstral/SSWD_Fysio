@@ -2,9 +2,15 @@
 using Core.DomainServices;
 using Infrastructure.EF;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using SSWD_Fysio.Models;
+using System;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SSWD_Fysio.Controllers
@@ -44,6 +50,49 @@ namespace SSWD_Fysio.Controllers
         [HttpGet]
         public IActionResult SignIn()
         {
+            SignInViewModel vm = new SignInViewModel();
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SignIn(SignInViewModel model) 
+        {
+            // Searching through the app account database to determine account type.
+            AppAccount acc = _appAccRepo.FindAccountByMail(model.mail);
+
+            if (acc == null)
+            {
+                ModelState.AddModelError("ACCOUNT_NOT_FOUND", "No accounts with that email adress found.");
+            }
+            else 
+            {
+                if (ModelState.IsValid)
+                {
+                    User user = await _userManager.FindByEmailAsync(model.mail);
+                    if (user == null)
+                    {
+                        ModelState.AddModelError("USER_NOT_FOUND", "No users with that email adress found.");
+                    }
+                    else 
+                    {
+                        // Signing in async, waiting for call-back.
+                        var sign = await _signInManager.PasswordSignInAsync(user, HashPassword(model.password), false, false);
+
+                        if (sign.Succeeded) {
+                            if (acc.accountType == AccountType.PRACTITIONER) {
+                                return RedirectToAction("Index", "Home");
+                            }
+                            else if (acc.accountType == AccountType.PATIENT)
+                            {
+                                return RedirectToAction("Index", "Home");
+                            }
+                            // Default in case the account has no type. (Should not happen.)
+                            return RedirectToAction("Index", "Account");
+                        }
+                    }
+                }
+            }
+
             return View();
         }
 
@@ -68,18 +117,27 @@ namespace SSWD_Fysio.Controllers
                     acc.mail = model.mail;
                     acc.accountType = AccountType.PATIENT;
                     acc.patientId = p.patientId;
-                    user.mail = model.mail;
 
-                    IdentityResult result = await _userManager.CreateAsync(user, user.password);
-                    if (result.Succeeded)
+                    user.mail = model.mail;
+                    user.Email = model.mail;
+                    user.UserName = model.mail;
+                    user.password = HashPassword(model.password);
+
+                    IdentityResult create = await _userManager.CreateAsync(user, user.password);
+                    if (create.Succeeded)
                     {
                         _appAccRepo.AddAppAccount(acc);
 
-                        return RedirectToAction("Index", "Account");
+                        var sign = await _signInManager.PasswordSignInAsync(user, HashPassword(model.password), false, false);
+                        if (sign.Succeeded)
+                        {
+                            // Default in case the account has no type. (Should not happen.)
+                            return RedirectToAction("Index", "Account");
+                        }
                     }
                     else
                     {
-                        foreach (IdentityError error in result.Errors)
+                        foreach (IdentityError error in create.Errors)
                         {
                             ModelState.AddModelError("", error.Description);
                         }
@@ -98,31 +156,97 @@ namespace SSWD_Fysio.Controllers
         public IActionResult RegisterPractitioner()
         {
             RegisterPractitionerViewModel model = new RegisterPractitionerViewModel();
+
+            List<string> options = new List<string>();
+            options.Add("Teacher");
+            options.Add("Student");
+
+            ViewData["PractitionerType"] = new SelectList(options);
+
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult RegisterPractitioner(RegisterPractitionerViewModel model)
+        public async Task<IActionResult> RegisterPractitioner(RegisterPractitionerViewModel model)
         {
-
             Practitioner p = new Practitioner();
+            AppAccount a = new AppAccount();
+            User user = new User();
+
+            // Setting info based on practitioner type.
+            if (model.chosenType.Equals("Student"))
+            {
+                p.type = PractitionerType.STUDENT;
+                p.studentNumber = model.number;
+            }
+            else if (model.chosenType.Equals("Teacher"))
+            {
+                p.type = PractitionerType.TEACHER;
+                p.employeeNumber = model.number;
+                p.BIGNumber = model.BIGnumber;
+            }
+
+            // General info.
+            p.name = model.name;
+            p.mail = model.mail;
+            p.phone = model.phone;
+
+            user.mail = model.mail;
+            user.Email = model.mail;
+            user.UserName = model.mail;
+            user.password = HashPassword(model.password);
 
             if (ModelState.IsValid)
             {
-                if (model.chosenType.Equals("Student"))
+                IdentityResult create = await _userManager.CreateAsync(user, user.password);
+                if (create.Succeeded)
                 {
-                    p.type = PractitionerType.STUDENT;
-                    p.studentNumber = model.number;
-                }
-                else if (model.chosenType.Equals("Teacher"))
-                {
-                    p.type = PractitionerType.TEACHER;
-                    p.employeeNumber = model.number;
-                }
+                    // Posting practitioner, getting ID after
+                    a.practitionerId = _practRepo.AddPractitioner(p);
+                    a.mail = model.mail;
+                    a.accountType = AccountType.PRACTITIONER;
 
-                _practRepo.AddPractitioner(p);
+                    // Adding app account for linking purposes
+                    _appAccRepo.AddAppAccount(a);
+
+                    var sign = await _signInManager.PasswordSignInAsync(user, HashPassword(model.password), false, false);
+                    if (sign.Succeeded)
+                    {
+                        return RedirectToAction("Index", "Account");
+                    }
+                }
+                else
+                {
+                    foreach (IdentityError error in create.Errors)
+                    {
+                        ModelState.AddModelError("IDENTITY_ERROR", error.Description);
+                    }
+                }
             }
-            return View("Index");
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult SignOut()
+        {
+            TempData.Clear();
+            _signInManager.SignOutAsync();
+
+            return RedirectToAction("Index", "Account");
+        }
+
+        public string HashPassword(string password) {
+            string salt = "aD3LCOSR4G0NR0LSc";
+            byte[] bytes = Encoding.ASCII.GetBytes(salt);
+
+            // Hashing the password using HMACSHA256
+            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                password: password,
+                salt: bytes,
+                prf: KeyDerivationPrf.HMACSHA256,
+                iterationCount: 100000,
+                numBytesRequested: 256 / 8));
+            return hashed;
         }
     }
 }

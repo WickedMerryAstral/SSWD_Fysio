@@ -1,6 +1,7 @@
 ﻿using Core.Domain;
 using Core.DomainServices;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SSWD_Fysio.Models;
@@ -42,9 +43,8 @@ namespace SSWD_Fysio.Controllers
 
         public IActionResult Index()
         {
-            if (TempData.ContainsKey("ACCOUNT_MAIL")) {
-                appUser = appAccRepo.FindAccountByMail(TempData["ACCOUNT_MAIL"].ToString());
-            }
+            string mail = User.Identity.Name;
+            appUser = appAccRepo.FindAccountByMail(mail);
 
             PractitionerDashboardViewModel vm = new PractitionerDashboardViewModel();
             vm.allFiles = fileRepo.GetPatientFiles();

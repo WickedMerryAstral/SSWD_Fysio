@@ -6,8 +6,7 @@
 <div class="text-center">
     <h2>Registering as practitioner</h2>
         <div class="col-md-4">
-
-        <form asp-action="Practitioner">
+        <form asp-action="RegisterPractitioner">
            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="mail" class="control-label"></label>
@@ -28,10 +27,9 @@
             </div>
 
             <div class="form-group">
-                <label class="control-label">Are you a student or teacher?</label>
-                <select asp-for="chosenType" class="form-control"
-                    asp-items="@(new SelectList(Model.typeOptions))">
-                </select>
+                 <label class="control-label">Are you a student or a teacher?</label>
+                 <select asp-for="chosenType" class ="form-control" asp-items="ViewBag.PractitionerType">
+                 </select>
             </div>
 
             <div class="form-group">
@@ -41,7 +39,7 @@
             </div>
 
             <div class="form-group">
-                <label asp-for="phone" class="control-label"></label>
+                <label class="control-label">Phone (Only mandatory for teachers.)</label>
                 <input asp-for="phone" class="form-control" />
                 <span asp-validation-for="phone" class="text-danger"></span>
             </div>

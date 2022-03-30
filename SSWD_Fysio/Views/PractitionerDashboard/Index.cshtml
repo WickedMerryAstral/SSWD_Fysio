@@ -3,7 +3,7 @@
 <partial name="_PractitionerBarPartialView" model="Model.practitionerBar"/>
 <md-container>
     <md-title>Your patients</md-title>
-    <div class="table">
+    <div>
         <table>
             <thead>
                 <tr>
@@ -25,10 +25,11 @@
         </table>
     </div>
     <input type="button" value="Intake Patient" onclick="location.href='@Url.Action("Index", "Intake")'" />
+</md-container>
 
-
+<md-container>
     <md-title>Today's appointments</md-title>
-    <div class="table">
+    <div>
         <table>
             <thead>
                 <tr>

@@ -48,6 +48,9 @@ namespace Core.Domain
 
         public PatientFile()
         {
+            // Initializing
+            treatmentPlan = new TreatmentPlan();
+            patient = new Patient();
         }
     }
 

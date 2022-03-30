@@ -47,9 +47,6 @@ namespace SSWD_Fysio.Controllers
 
         public IActionResult Index()
         {
-            TempData["ACCOUNT_MAIL"] = "John@johnmail.com";
-            TempData.Keep();
-
             HomeViewModel vm = new HomeViewModel();
             vm.practitionerBar.amountOfAppointments = 3;
             vm.practitionerBar.isPractitioner = true;

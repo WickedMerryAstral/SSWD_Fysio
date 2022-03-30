@@ -18,7 +18,7 @@ namespace Infrastructure.EF
 
         public int AddAppAccount(AppAccount account)
         {
-            if (context.accounts.Where(ac => ac.mail == account.mail).Any()) {
+            if (!context.accounts.Where(ac => ac.mail == account.mail).Any()) {
                 context.accounts.Add(account);
                 context.SaveChanges();
                 return account.accountId;
