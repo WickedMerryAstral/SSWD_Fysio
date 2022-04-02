@@ -19,6 +19,9 @@
                         <td>@Html.DisplayFor(modelItem => pf.patient.name)</td>
                         <td>@Html.DisplayFor(modelItem => pf.patient.patientId)</td>
                         <td>@Html.DisplayFor(modelItem => pf.treatmentPlan.diagnosis)</td>
+                        <td>
+                            <a asp-controller="PatientFiles" asp-action="Details" asp-route-id="@pf.patientFileId">Details</a>
+                        </td>
                     </tr>
                 }
             </tbody>

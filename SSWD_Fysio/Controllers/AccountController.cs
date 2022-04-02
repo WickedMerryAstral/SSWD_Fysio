@@ -48,7 +48,7 @@ namespace SSWD_Fysio.Controllers
         }
 
         [HttpGet]
-        public IActionResult SignIn()
+        public IActionResult Login()
         {
             SignInViewModel vm = new SignInViewModel();
             return View();
@@ -227,7 +227,7 @@ namespace SSWD_Fysio.Controllers
         }
 
         [HttpGet]
-        public IActionResult SignOut()
+        public IActionResult Logout()
         {
             TempData.Clear();
             _signInManager.SignOutAsync();

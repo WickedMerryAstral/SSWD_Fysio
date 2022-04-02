@@ -1,0 +1,122 @@
+﻿@model SSWD_Fysio.Models.PatientFileViewModel
+
+<partial name="_PractitionerBarPartialView" model="Model.practitionerBar"/>
+<md-container>
+    <h2>Patient</h2>
+        <div>
+            <label>Photo</label>
+            <label>W.I.P</label>
+        </div>
+
+        <div>
+            <label>Name:</label>
+            @Html.DisplayFor(model => model.patient.name)
+        </div>
+
+        <div>
+            <label>Email</label>
+            @Html.DisplayFor(model => model.patient.mail)
+        </div>
+
+        <div>
+            <label>Phone</label>
+            @Html.DisplayFor(model => model.patient.phone)
+        </div>
+
+        <div>
+            <label>Age</label>
+            @Html.DisplayFor(model => model.patient.age)
+        </div>
+
+        <div>
+            <label>Sex</label>
+            @Html.DisplayFor(model => model.sex)
+        </div>
+
+        <div>
+            <label>Patient Type</label>
+            @Html.DisplayFor(model => model.type)
+        </div>
+
+        <div>
+            <label>Student / Employee Number</label>
+            @Html.DisplayFor(model => model.number)
+        </div>
+
+</md-container>
+
+<md-container>
+    <h2>Treatment Plan</h2>
+        <div>
+            <label>Diagnosis:</label>
+            @Html.DisplayFor(model => model.treatmentPlan.diagnosis)
+        </div>
+        <div>
+            <label>Complaint:</label>
+            @Html.DisplayFor(model => model.treatmentPlan.complaint)
+        </div>
+        <div>
+            <label>Weekly Sessions:</label>
+            @Html.DisplayFor(model => model.treatmentPlan.weeklySessions)
+        </div>
+        <div>
+            <label>Duration (in minutes):</label>
+            @Html.DisplayFor(model => model.treatmentPlan.sessionDuration)
+        </div>
+</md-container>
+
+<md-container>
+    <h2>Treatments</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Mandatory Explanation</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var t in Model.treatments)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => t.treatmentDate)</td>
+                        <td>@Html.DisplayFor(modelItem => t.type)</td>
+                        <td>@Html.DisplayFor(modelItem => t.location)</td>
+                        <td>@Html.DisplayFor(modelItem => t.hasMandatoryExplanation)</td>
+                        <td>
+                            <a asp-controller="Treatments" asp-action="Details" asp-route-id="@t.treatmentId">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <a asp-controller="Treatments" asp-action="Create" asp-route-id="@Model.patientFile.patientFileId">Add Treatment</a>
+</md-container>
+
+<md-container>
+    <h2>Comments</h2>
+            <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Content</th>
+                    <th>Visible to Patient</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model.comments)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => c.postDate)</td>
+                        <td>@Html.DisplayFor(modelItem => c.content)</td>
+                        <td>@Html.DisplayFor(modelItem => c.visible)</td>
+                        <td>
+                            <a asp-controller="Comments" asp-action="Details" asp-route-id="@c.commentId">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <a asp-controller="Treatments" asp-action="Create" asp-route-id="@Model.patientFile.patientFileId">Add Comment</a>
+</md-container>

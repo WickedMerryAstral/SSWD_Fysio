@@ -1,153 +1,225 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Core.Domain;
+using Core.DomainServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Core.Domain;
-using Infrastructure.EF;
+using Microsoft.Extensions.Logging;
+using SSWD_Fysio.Models;
+using System;
+using System.Collections.Generic;
 
 namespace SSWD_Fysio.Controllers
 {
+    [Authorize]
     public class TreatmentsController : Controller
     {
-        private readonly FysioDBContext _context;
+        private AppAccount appUser;
+        static List<VektisTreatment> vektisTreatments;
 
-        public TreatmentsController(FysioDBContext context)
+        // Repositories
+        private IPatientFileRepository fileRepo;
+        private IPatientRepository patientRepo;
+        private IPractitionerRepository practitionerRepo;
+        private ITreatmentPlanRepository planRepo;
+        private ITreatmentRepository treatmentRepo;
+        private IAppAccountRepository appAccRepo;
+
+        private readonly ILogger<TreatmentsController> _logger;
+
+        public TreatmentsController(
+            ILogger<TreatmentsController> logger,
+            IAppAccountRepository app,
+            IPatientFileRepository file,
+            IPatientRepository patient,
+            IPractitionerRepository practitioner,
+            ITreatmentPlanRepository plan,
+            ITreatmentRepository treatment)
         {
-            _context = context;
+            appAccRepo = app;
+            fileRepo = file;
+            patientRepo = patient;
+            practitionerRepo = practitioner;
+            planRepo = plan;
+            treatmentRepo = treatment;
+            _logger = logger;
         }
 
-        // GET: Treatments
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.treatments.ToListAsync());
+        [HttpGet]
+        public IActionResult Create(int id) {
+
+            // Getting the treatment codes from the database
+            GetVektisTreatments();
+
+            // Getting all practitioners to fill the selector
+            // Might change it to just take the logged on Practitioner instead.
+            ViewData["Practitioners"] = new SelectList(practitionerRepo.getAllPractitioners(), "practitionerId", "name");
+            ViewData["VektisTreatments"] = new SelectList(vektisTreatments, "treatmentCode", "treatmentCode");
+
+            TreatmentViewModel vm = new TreatmentViewModel();
+            vm.patientFile = fileRepo.FindPatientFileById(id);
+
+            // Setting active editing file ID
+            TempData["TreatmentPlanId"] = vm.patientFile.treatmentPlan.treatmentPlanId;
+            TempData.Keep();
+
+            return View(vm);
         }
 
-        // GET: Treatments/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var treatment = await _context.treatments
-                .FirstOrDefaultAsync(m => m.treatmentId == id);
-            if (treatment == null)
-            {
-                return NotFound();
-            }
-
-            return View(treatment);
-        }
-
-        // GET: Treatments/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Treatments/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("treatmentId,practitionerId,treatmentPlanId,type,treatmentDate,location")] Treatment treatment)
+        public IActionResult Create(TreatmentViewModel model) 
         {
-            if (ModelState.IsValid)
+            // Getting the user
+            GetUser();
+
+            // Getting the treatment codes from the database
+            GetVektisTreatments();
+
+            // Getting the active patient file
+            PatientFile pf = fileRepo.FindPatientFileById((int)TempData["PatientFileId"]);
+            TempData.Keep();
+            model.patientFile = pf;
+
+            // Setting the right plan Id
+            Treatment t = new Treatment();
+            t.treatmentPlanId = (int)TempData["TreatmentPlanId"];
+
+            if (model.treatmentDate < pf.dischargeDate)
             {
-                _context.Add(treatment);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError("INVALID_DATE", "Treatment date can't be after discharge date.");
             }
-            return View(treatment);
+            else
+            {
+                if (ModelState.IsValid)
+                {
+                    // Getting info from the code list
+                    VektisTreatment vektisTreatment = vektisTreatments.Find(vt => vt.treatmentCode == model.treatment.type);
+                    t.hasMandatoryExplanation = vektisTreatment.hasMandatoryExplanation;
+                    t.description = vektisTreatment.description;
+                    t.type = model.treatment.type;
+
+                    // Data
+                    t.location = model.treatment.location;
+                    t.practitionerId = model.chosenPractitioner;
+                    t.treatmentDate = model.treatmentDate;
+
+                    treatmentRepo.AddTreatment(t);
+                    return RedirectToAction("Details", "PatientFiles", new {id = (int)TempData["PatientFileId"]});
+                }
+            }
+
+            return RedirectToAction("Create", "Treatments", (int)TempData["PatientFileId"]);
         }
 
-        // GET: Treatments/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        [HttpGet]
+        public IActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            // Loading in data
+            TreatmentViewModel vm = new TreatmentViewModel();
+            vm.treatment = treatmentRepo.FindTreatmentById(id);
+            vm.currentPractitioner = practitionerRepo.GetPractitionerById(vm.treatment.practitionerId);
 
-            var treatment = await _context.treatments.FindAsync(id);
-            if (treatment == null)
-            {
-                return NotFound();
-            }
-            return View(treatment);
+
+            return View(vm);
         }
 
-        // POST: Treatments/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            GetUser();
+            GetVektisTreatments();
+
+            // Getting the active patient file
+            PatientFile pf = fileRepo.FindPatientFileById((int)TempData["PatientFileId"]);
+            TempData.Keep();
+
+            ViewData["Practitioners"] = new SelectList(practitionerRepo.getAllPractitioners(), "practitionerId", "name");
+            ViewData["VektisTreatments"] = new SelectList(vektisTreatments, "treatmentCode", "treatmentCode");
+
+            // Setting the current variables
+            TreatmentViewModel vm = new TreatmentViewModel();
+            vm.treatment = treatmentRepo.FindTreatmentById(id);
+            vm.patientFile = pf;
+
+            // Setting active editing file ID
+            TempData["TreatmentId"] = id;
+            TempData.Keep();
+
+            return View(vm);
+        }
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("treatmentId,practitionerId,treatmentPlanId,type,treatmentDate,location")] Treatment treatment)
+        public IActionResult Edit(TreatmentViewModel model) 
         {
-            if (id != treatment.treatmentId)
-            {
-                return NotFound();
-            }
+            GetUser();
+            GetVektisTreatments();
 
-            if (ModelState.IsValid)
+            // Getting the active patient file
+            PatientFile pf = fileRepo.FindPatientFileById((int)TempData["PatientFileId"]);
+            TempData.Keep();
+            model.patientFile = pf;
+
+            // Setting the right plan Id
+            Treatment t = new Treatment();
+
+            if (model.treatmentDate < pf.dischargeDate)
             {
-                try
+                ModelState.AddModelError("INVALID_DATE", "Treatment date can't be after discharge date.");
+            }
+            else
+            {
+                if (ModelState.IsValid)
                 {
-                    _context.Update(treatment);
-                    await _context.SaveChangesAsync();
+                    // Getting info from the code list
+                    VektisTreatment vektisTreatment = vektisTreatments.Find(vt => vt.treatmentCode == model.treatment.type);
+                    t.hasMandatoryExplanation = vektisTreatment.hasMandatoryExplanation;
+                    t.description = vektisTreatment.description;
+
+                    // Data
+                    t.type = vektisTreatment.treatmentCode;
+                    t.location = model.treatment.location;
+                    t.practitionerId = model.chosenPractitioner;
+                    t.treatmentDate = model.treatmentDate;
+                    t.treatmentId = (int)TempData["TreatmentId"];
+
+                    treatmentRepo.UpdateTreatment(t);
+                    
+                    return RedirectToAction("Details", "PatientFiles", new { id = (int)TempData["PatientFileId"] });
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TreatmentExists(treatment.treatmentId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
             }
-            return View(treatment);
+
+            return RedirectToAction("Edit", "Treatments", (int)TempData["PatientFileId"]);
         }
 
-        // GET: Treatments/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        [HttpGet]
+        public IActionResult Delete(int id)
         {
-            if (id == null)
+            treatmentRepo.DeleteTreatmentById(id);
+            return RedirectToAction("Index", "PractitionerDashboard");
+        }
+
+        public void GetVektisTreatments() {
+            vektisTreatments = new List<VektisTreatment>();
+            vektisTreatments.Add(new VektisTreatment("Alpha", "First this, then that", true));
+            vektisTreatments.Add(new VektisTreatment("Beta", "First that, then this", false));
+        }
+        private void GetUser()
+        {
+            string mail = User.Identity.Name;
+            appUser = appAccRepo.FindAccountByMail(mail);
+        }
+
+        // Private class for loading on Vektis Codes from the server.
+        private class VektisTreatment {
+            public string treatmentCode { get; set; }
+            public string description { get; set; }
+            public bool hasMandatoryExplanation { get; set; }
+
+            public VektisTreatment(string treatmentCode, string description, bool hasMandatoryExplanation)
             {
-                return NotFound();
+                this.treatmentCode = treatmentCode;
+                this.description = description;
+                this.hasMandatoryExplanation = hasMandatoryExplanation;
             }
-
-            var treatment = await _context.treatments
-                .FirstOrDefaultAsync(m => m.treatmentId == id);
-            if (treatment == null)
-            {
-                return NotFound();
-            }
-
-            return View(treatment);
-        }
-
-        // POST: Treatments/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var treatment = await _context.treatments.FindAsync(id);
-            _context.treatments.Remove(treatment);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool TreatmentExists(int id)
-        {
-            return _context.treatments.Any(e => e.treatmentId == id);
         }
     }
 }

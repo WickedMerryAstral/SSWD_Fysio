@@ -49,6 +49,10 @@ namespace SSWD_Fysio.Controllers
             model.diagnosisCodes.Add("Beta");
 
             // Preparing View Data for Intake viewmodel
+            ViewData["SexOptions"] = new SelectList(model.sexOptions);
+            ViewData["PatientTypeOptions"] = new SelectList(model.patientTypes);
+            ViewData["DiagnosisOptions"] = new SelectList(model.diagnosisCodes);
+
             ViewData["Practitioners"] = new SelectList(practitionerRepo.getAllPractitioners(), "practitionerId", "name");
             ViewData["Supervisors"] = new SelectList(practitionerRepo.getAllSupervisors(), "practitionerId", "name");
 
@@ -108,10 +112,11 @@ namespace SSWD_Fysio.Controllers
             file.supervisedBypractitionerId = model.chosenSupervisor;
             file.intakeByPractitionerId = model.chosenIntaker;
             file.treatmentPlan.practitionerId = model.chosenMainPractitioner;
+            file.comments = new List<Comment>();
 
             fileRepo.AddPatientFile(file);
 
-            return View("Index");
+            return RedirectToAction("Index", "PractitionerDashboard");
         }
     }
 }

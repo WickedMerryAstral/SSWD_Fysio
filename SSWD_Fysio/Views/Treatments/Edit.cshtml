@@ -1,54 +1,44 @@
-﻿@model Core.Domain.Treatment
+﻿@model SSWD_Fysio.Models.TreatmentViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editing treatment";
 }
 
-<h1>Edit</h1>
-
-<h4>Treatment</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="treatmentId" />
-            <div class="form-group">
-                <label asp-for="practitionerId" class="control-label"></label>
-                <select asp-for="practitionerId" class="form-control" asp-items="ViewBag.practitionerId"></select>
-                <span asp-validation-for="practitionerId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="treatmentPlanId" class="control-label"></label>
-                <select asp-for="treatmentPlanId" class="form-control" asp-items="ViewBag.treatmentPlanId"></select>
-                <span asp-validation-for="treatmentPlanId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="type" class="control-label"></label>
-                <input asp-for="type" class="form-control" />
-                <span asp-validation-for="type" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="treatmentDate" class="control-label"></label>
-                <input asp-for="treatmentDate" class="form-control" />
-                <span asp-validation-for="treatmentDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="location" class="control-label"></label>
-                <input asp-for="location" class="form-control" />
-                <span asp-validation-for="location" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
-
+<h2>Editing Treatment @Model.treatment.treatmentId</h2>
 <div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <form asp-action="Edit">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                    <label>Practitioner:</label>
+                    <select asp-for="chosenPractitioner" class ="form-control" asp-items="ViewBag.Practitioners">
+                    </select>
+                    <span asp-validation-for="chosenPractitioner" class="text-danger"></span>
+            </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+            <div class="form-group">
+                    <label>Treatment Type:</label>
+                    <select asp-for="treatment.type" class ="form-control" asp-items="ViewBag.VektisTreatments">
+                    </select>
+                    <span asp-validation-for="treatment.type" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label>Location:</label>
+                <input asp-for="treatment.location" class="form-control/>
+                <span asp-validation-for="treatment.location" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                    <label>Treatment Date:</label>
+                    <input asp-for="treatmentDate"/>
+                    <span asp-validation-for="treatmentDate" class="text-danger"></span>
+                    <span asp-validation-for="treatmentDate" class="text-danger"></span>
+            </div>
+            <label>Discharge date: @Model.patientFile.dischargeDate</label>
+
+            <div class="form-group">
+                <a asp-controller="PatientFiles" asp-action="Details" asp-route-id="@Model.patientFile.patientFileId">Back</a>
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+    </form>
+</div>

@@ -23,11 +23,11 @@ namespace Core.Domain
         // Also obtained from the Vektis server.
         [Required]
         public bool hasMandatoryExplanation { get; set; }
+        public string description { get; set; }
 
         // Info
         public DateTime treatmentDate { get; set; }
         public string location { get; set; }
-
 
         public Treatment(int practitionerId, int treatmentPlanId, string type, DateTime treatmentDate, string location, int patientId, string patientName, bool hasMandatoryExplanation)
         {
@@ -42,6 +42,7 @@ namespace Core.Domain
 
         public Treatment()
         {
+
         }
     }
 }

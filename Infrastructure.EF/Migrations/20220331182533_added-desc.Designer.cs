@@ -4,6 +4,7 @@ using Infrastructure.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.EF.Migrations
 {
     [DbContext(typeof(FysioDBContext))]
-    partial class FysioDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220331182533_added-desc")]
+    partial class addeddesc
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -212,8 +214,8 @@ namespace Infrastructure.EF.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("treatmentId"), 1L, 1);
 
-                    b.Property<string>("description")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("description")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("hasMandatoryExplanation")
                         .HasColumnType("bit");

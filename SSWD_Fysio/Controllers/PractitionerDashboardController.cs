@@ -8,7 +8,7 @@ using SSWD_Fysio.Models;
 
 namespace SSWD_Fysio.Controllers
 {
-    [AllowAnonymous]
+    [Authorize]
     public class PractitionerDashboardController : Controller
     {
         private AppAccount appUser;
