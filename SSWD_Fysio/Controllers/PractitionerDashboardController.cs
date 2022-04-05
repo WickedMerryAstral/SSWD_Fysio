@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SSWD_Fysio.Models;
+using System;
 
 namespace SSWD_Fysio.Controllers
 {
@@ -12,6 +13,7 @@ namespace SSWD_Fysio.Controllers
     public class PractitionerDashboardController : Controller
     {
         private AppAccount appUser;
+        private PractitionerBar practitionerBar;
 
         // Repositories
         private IPatientFileRepository fileRepo;
@@ -43,18 +45,41 @@ namespace SSWD_Fysio.Controllers
 
         public IActionResult Index()
         {
+            // Getting the current user, writing to appaccount
+            GetUser();
+
+            if (appUser.accountType == AccountType.PRACTITIONER) {
+                // Generating the object for data viewing
+                PractitionerDashboardViewModel vm = new PractitionerDashboardViewModel();
+                vm.allFiles = fileRepo.GetPatientFiles();
+                vm.practitionerFiles = fileRepo.FindPatientFilesByPractitionerId(appUser.practitionerId);
+
+                // Finding and sorting treatments
+                vm.treatments = treatmentRepo.GetTodaysTreatmentsByPractitionerId(appUser.practitionerId);
+                vm.treatments.Sort((x, y) => DateTime.Compare(x.treatmentDate, y.treatmentDate));
+
+                vm.practitionerBar.amountOfAppointments = vm.treatments.Count;
+                vm.practitionerBar.isPractitioner = true;
+
+                return View(vm);
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        private void GetUser()
+        {
+            // Finding an account by email
             string mail = User.Identity.Name;
             appUser = appAccRepo.FindAccountByMail(mail);
+            practitionerBar = new PractitionerBar();
 
-            PractitionerDashboardViewModel vm = new PractitionerDashboardViewModel();
-            vm.allFiles = fileRepo.GetPatientFiles();
-            vm.practitionerFiles = fileRepo.FindPatientFilesByPractitionerId(appUser.practitionerId);
-            vm.PopulateTreatments(appUser.practitionerId);
-
-            vm.practitionerBar.amountOfAppointments = treatmentRepo.GetTodaysTreatmentsCount(appUser.practitionerId);
-            vm.practitionerBar.isPractitioner = true;
-
-            return View(vm);
+            // Setting the practitioner bar values
+            if (appUser.accountType == AccountType.PRACTITIONER)
+            {
+                practitionerBar.amountOfAppointments = treatmentRepo.GetTodaysTreatmentsByPractitionerId(appUser.practitionerId).Count;
+                practitionerBar.isPractitioner = true;
+            }
         }
     }
 }

@@ -21,30 +21,6 @@ namespace SSWD_Fysio.Models
             patientTreatments = new List<PatientTreatment>();
         }
 
-        public void PopulateTreatments(int practitionerId) {
-            foreach (PatientFile file in allFiles)
-            {
-                // Getting the info from the file.
-                string patientName = file.patient.name;
-                int patientId = file.patient.patientId;
-
-                // Searching through the treatment list.
-                foreach (Treatment treatment in file.treatmentPlan.treatments)
-                {
-                    // Only fill in treatments belonging to the practitioner, and are today.
-                    if (treatment.practitionerId == practitionerId && treatment.treatmentDate == DateTime.Today) {
-                        PatientTreatment pt = new PatientTreatment();
-                        pt.treatmentId = treatment.treatmentId;
-                        pt.treatmentCode = treatment.type;
-                        pt.treatmentDate = treatment.treatmentDate;
-
-                        pt.patientName = patientName;
-                        pt.patientId = patientId;
-                    }
-                }
-            }
-        }
-
         public class PatientTreatment
         {
             public int treatmentId { get; set; }

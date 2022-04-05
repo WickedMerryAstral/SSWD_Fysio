@@ -38,7 +38,7 @@ namespace Infrastructure.EF
 
         public List<Treatment> GetTreatmentsByPractitioner(int practitionerId)
         {
-            throw new NotImplementedException();
+            return context.treatments.Where(t => t.practitionerId == practitionerId).ToList();
         }
 
         public List<Treatment> GetTreatmentsByTreatmentPlanId(int planId)
@@ -66,12 +66,18 @@ namespace Infrastructure.EF
         public void UpdateTreatment(Treatment treatment)
         {
             Treatment t = FindTreatmentById(treatment.treatmentId);
+            t.treatmentDate = treatment.treatmentDate;
             t.location = treatment.location;
             t.type = treatment.type; 
             t.description = treatment.description;
             t.practitionerId = treatment.practitionerId;
             t.hasMandatoryExplanation = treatment.hasMandatoryExplanation;
             context.SaveChanges();
+        }
+
+        public List<Treatment> GetTodaysTreatmentsByPractitionerId(int practitionerId)
+        {
+            return context.treatments.Where(t => t.practitionerId == practitionerId && t.treatmentDate.Date == DateTime.Today).ToList();
         }
     }
 }

@@ -25,7 +25,8 @@ namespace Infrastructure.EF
 
         public int DeletePatientById(int id)
         {
-            throw new NotImplementedException();
+            context.Remove(FindPatientById(id));
+            return id;
         }
 
         public Patient FindPatientById(int id)

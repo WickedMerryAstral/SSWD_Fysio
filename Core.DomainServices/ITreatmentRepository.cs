@@ -11,6 +11,7 @@ namespace Core.DomainServices
         public List<Treatment> GetTreatmentsByTreatmentPlanId(int planId);
         public List<Treatment> GetTreatmentsByPractitioner(int practitionerId);
         public List<Treatment> GetTreatmentsByPractitionerId(int practitionerId);
+        public List<Treatment> GetTodaysTreatmentsByPractitionerId(int practitionerId);
         public List<Treatment> GetTreatmentsByPatientId(int patientId);
         public int GetTodaysTreatmentsCount(int practitionerId);
         public void UpdateTreatment(Treatment treatment);

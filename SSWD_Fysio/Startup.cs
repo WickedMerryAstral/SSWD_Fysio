@@ -66,6 +66,7 @@ namespace SSWD_Fysio
             services.AddTransient<ITreatmentPlanRepository, EFTreatmentPlanRepository>();
             services.AddTransient<ITreatmentRepository, EFTreatmentRepository>();
             services.AddTransient<IAppAccountRepository, EFAppAccountRepository>();
+            services.AddTransient<ICommentRepository, EFCommentRepository>();
         }
 
 

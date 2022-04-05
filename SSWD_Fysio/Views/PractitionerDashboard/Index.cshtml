@@ -2,7 +2,7 @@
 
 <partial name="_PractitionerBarPartialView" model="Model.practitionerBar"/>
 <md-container>
-    <md-title>Your patients</md-title>
+    <h2>Your patients</h2>
     <div>
         <table>
             <thead>
@@ -27,27 +27,31 @@
             </tbody>
         </table>
     </div>
-    <input type="button" value="Intake Patient" onclick="location.href='@Url.Action("Index", "Intake")'" />
 </md-container>
+<a asp-controller="Intake" asp-action="Index">Intake Patient</a>
 
+<br />
 <md-container>
-    <md-title>Today's appointments</md-title>
+    <h2>Today's appointments</h2>
     <div>
         <table>
             <thead>
                 <tr>
                     <th>Time</th>
-                    <th>Patient</th>
-                    <th>Treatment</th>
+                    <th>Mandatory Explanation</th>
+                    <th>Code</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var pt in Model.patientTreatments)
+                @foreach (var t in Model.treatments)
                 {
                     <tr>
-                        <td>@Html.DisplayFor(modelItem => pt.treatmentDate)</td>
-                        <td>@Html.DisplayFor(modelItem => pt.patientName)</td>
-                        <td>@Html.DisplayFor(modelItem => pt.treatmentCode)</td>
+                        <td>@Html.DisplayFor(modelItem => t.treatmentDate.TimeOfDay)</td>
+                        <td>@Html.DisplayFor(modelItem => t.hasMandatoryExplanation)</td>
+                        <td>@Html.DisplayFor(modelItem => t.type)</td>
+                        <td>
+                            <a asp-controller="Treatments" asp-action="Details" asp-route-id="@t.treatmentId">Details</a>
+                        </td>
                     </tr>
                 }
             </tbody>

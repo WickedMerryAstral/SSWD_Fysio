@@ -1,42 +1,21 @@
-﻿@model Core.Domain.Comment
+﻿@model SSWD_Fysio.Models.CommentViewModel
 
-@{
-    ViewData["Title"] = "Details";
-}
+<partial name="_PractitionerBarPartialView" model="Model.practitionerBar"/>
+<md-container>
+    <h2>Comment @Model.comment.commentId</h2>
+        <div>
+            <label>Content:</label>
+            @Html.DisplayFor(model => model.comment.content)
+        </div>
 
-<h1>Details</h1>
+        <div>
+            <label>Visible to patient:</label>
+            @Html.DisplayFor(model => model.comment.visible)
+        </div>
 
-<div>
-    <h4>Comment</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.practitionerId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.practitionerId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.postDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.postDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.visible)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.visible)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.content)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.content)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.commentId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+        <div class="form-group">
+            <a href="javascript: history.go(-1)">Back</a> |
+            <a onclick="return confirm('Are you sure you want to remove this comment?');" 
+                asp-controller="Comments" asp-action="Delete" asp-route-id="@Model.comment.commentId">Delete</a>
+        </div>
+</md-container>

@@ -4,9 +4,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using SSWD_Fysio.Models;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace SSWD_Fysio.Controllers
 {
@@ -14,7 +17,8 @@ namespace SSWD_Fysio.Controllers
     public class TreatmentsController : Controller
     {
         private AppAccount appUser;
-        static List<VektisTreatment> vektisTreatments;
+        private HttpClient client = new HttpClient();
+        private List<VektisTreatment> treatments;
 
         // Repositories
         private IPatientFileRepository fileRepo;
@@ -48,14 +52,14 @@ namespace SSWD_Fysio.Controllers
         public IActionResult Create(int id) {
 
             // Getting the treatment codes from the database
-            GetVektisTreatments();
+            PopulateTreatments();
 
             // Getting all practitioners to fill the selector
             // Might change it to just take the logged on Practitioner instead.
             ViewData["Practitioners"] = new SelectList(practitionerRepo.getAllPractitioners(), "practitionerId", "name");
-            ViewData["VektisTreatments"] = new SelectList(vektisTreatments, "treatmentCode", "treatmentCode");
 
             TreatmentViewModel vm = new TreatmentViewModel();
+            vm.treatment.treatmentDate = DateTime.Now;
             vm.patientFile = fileRepo.FindPatientFileById(id);
 
             // Setting active editing file ID
@@ -72,7 +76,7 @@ namespace SSWD_Fysio.Controllers
             GetUser();
 
             // Getting the treatment codes from the database
-            GetVektisTreatments();
+            PopulateTreatments();
 
             // Getting the active patient file
             PatientFile pf = fileRepo.FindPatientFileById((int)TempData["PatientFileId"]);
@@ -82,8 +86,14 @@ namespace SSWD_Fysio.Controllers
             // Setting the right plan Id
             Treatment t = new Treatment();
             t.treatmentPlanId = (int)TempData["TreatmentPlanId"];
+            TempData.Keep();
 
-            if (model.treatmentDate < pf.dischargeDate)
+            if (planRepo.HasReachedWeeklyLimit(model.treatmentDate.Date, pf.treatmentPlan.treatmentPlanId))
+            {
+                ModelState.AddModelError("LIMIT_REACHED", "Limit of treatments for this week has been reached.");
+            }
+
+            if (model.treatmentDate > pf.dischargeDate)
             {
                 ModelState.AddModelError("INVALID_DATE", "Treatment date can't be after discharge date.");
             }
@@ -92,12 +102,16 @@ namespace SSWD_Fysio.Controllers
                 if (ModelState.IsValid)
                 {
                     // Getting info from the code list
-                    VektisTreatment vektisTreatment = vektisTreatments.Find(vt => vt.treatmentCode == model.treatment.type);
-                    t.hasMandatoryExplanation = vektisTreatment.hasMandatoryExplanation;
+                    VektisTreatment vektisTreatment = treatments.Find(vt => vt.code == model.treatment.type);
+                    t.hasMandatoryExplanation = false;
                     t.description = vektisTreatment.description;
-                    t.type = model.treatment.type;
+                    if (vektisTreatment.explanation.Equals("Ja"))
+                    {
+                        t.hasMandatoryExplanation = true;
+                    };
 
                     // Data
+                    t.type = vektisTreatment.code;
                     t.location = model.treatment.location;
                     t.practitionerId = model.chosenPractitioner;
                     t.treatmentDate = model.treatmentDate;
@@ -118,7 +132,6 @@ namespace SSWD_Fysio.Controllers
             vm.treatment = treatmentRepo.FindTreatmentById(id);
             vm.currentPractitioner = practitionerRepo.GetPractitionerById(vm.treatment.practitionerId);
 
-
             return View(vm);
         }
 
@@ -126,14 +139,13 @@ namespace SSWD_Fysio.Controllers
         public IActionResult Edit(int id)
         {
             GetUser();
-            GetVektisTreatments();
+            PopulateTreatments();
 
             // Getting the active patient file
             PatientFile pf = fileRepo.FindPatientFileById((int)TempData["PatientFileId"]);
             TempData.Keep();
 
             ViewData["Practitioners"] = new SelectList(practitionerRepo.getAllPractitioners(), "practitionerId", "name");
-            ViewData["VektisTreatments"] = new SelectList(vektisTreatments, "treatmentCode", "treatmentCode");
 
             // Setting the current variables
             TreatmentViewModel vm = new TreatmentViewModel();
@@ -151,7 +163,7 @@ namespace SSWD_Fysio.Controllers
         public IActionResult Edit(TreatmentViewModel model) 
         {
             GetUser();
-            GetVektisTreatments();
+            PopulateTreatments();
 
             // Getting the active patient file
             PatientFile pf = fileRepo.FindPatientFileById((int)TempData["PatientFileId"]);
@@ -161,7 +173,11 @@ namespace SSWD_Fysio.Controllers
             // Setting the right plan Id
             Treatment t = new Treatment();
 
-            if (model.treatmentDate < pf.dischargeDate)
+            if (planRepo.HasReachedWeeklyLimit(model.treatmentDate.Date, pf.treatmentPlan.treatmentPlanId)) {
+                ModelState.AddModelError("LIMIT_REACHED", "Limit of treatments for this week has been reached.");
+            }
+
+            if (model.treatmentDate > pf.dischargeDate)
             {
                 ModelState.AddModelError("INVALID_DATE", "Treatment date can't be after discharge date.");
             }
@@ -170,12 +186,15 @@ namespace SSWD_Fysio.Controllers
                 if (ModelState.IsValid)
                 {
                     // Getting info from the code list
-                    VektisTreatment vektisTreatment = vektisTreatments.Find(vt => vt.treatmentCode == model.treatment.type);
-                    t.hasMandatoryExplanation = vektisTreatment.hasMandatoryExplanation;
+                    VektisTreatment vektisTreatment = treatments.Find(vt => vt.code == model.treatment.type);
+                    t.hasMandatoryExplanation = false;
                     t.description = vektisTreatment.description;
+                    if (vektisTreatment.explanation.Equals("Ja")) {
+                        t.hasMandatoryExplanation = true;
+                    };
 
                     // Data
-                    t.type = vektisTreatment.treatmentCode;
+                    t.type = vektisTreatment.code;
                     t.location = model.treatment.location;
                     t.practitionerId = model.chosenPractitioner;
                     t.treatmentDate = model.treatmentDate;
@@ -197,29 +216,44 @@ namespace SSWD_Fysio.Controllers
             return RedirectToAction("Index", "PractitionerDashboard");
         }
 
-        public void GetVektisTreatments() {
-            vektisTreatments = new List<VektisTreatment>();
-            vektisTreatments.Add(new VektisTreatment("Alpha", "First this, then that", true));
-            vektisTreatments.Add(new VektisTreatment("Beta", "First that, then this", false));
-        }
         private void GetUser()
         {
             string mail = User.Identity.Name;
             appUser = appAccRepo.FindAccountByMail(mail);
         }
 
-        // Private class for loading on Vektis Codes from the server.
-        private class VektisTreatment {
-            public string treatmentCode { get; set; }
-            public string description { get; set; }
-            public bool hasMandatoryExplanation { get; set; }
-
-            public VektisTreatment(string treatmentCode, string description, bool hasMandatoryExplanation)
+        private void PopulateTreatments()
+        {
+            // Fill diagnosis
+            try
             {
-                this.treatmentCode = treatmentCode;
-                this.description = description;
-                this.hasMandatoryExplanation = hasMandatoryExplanation;
+                ViewData["TreatmentOptions"] = GetData().Result;
             }
+            catch (Exception ex)
+            {
+                ViewData["TreatmentOptions"] = new SelectList("0");
+            }
+        }
+
+        private async Task<SelectList> GetData()
+        {
+            treatments = new List<VektisTreatment>();
+
+            HttpResponseMessage response = await client.GetAsync("http://localhost:5000/Treatment");
+            response.EnsureSuccessStatusCode();
+            string responseBody = await response.Content.ReadAsStringAsync();
+
+            treatments = JsonConvert.DeserializeObject<List<VektisTreatment>>(responseBody);
+            treatments.Sort((x, y) => String.Compare(x.code, y.code));
+
+            List<string> treatmentOptions = new List<string>();
+            foreach (VektisTreatment vt in treatments)
+            {
+                treatmentOptions.Add(vt.code);
+            }
+
+            SelectList output = new SelectList(treatmentOptions);
+            return output;
         }
     }
 }

@@ -12,5 +12,6 @@ namespace Core.DomainServices
         public int AddTreatmentPlan(TreatmentPlan treatmentPlan);
         public TreatmentPlan FindTreatmentPlanById(int id);
         public int DeleteTreatmentPlanById(int id);
+        public bool HasReachedWeeklyLimit(DateTime date, int treatmentPlanId);
     }
 }

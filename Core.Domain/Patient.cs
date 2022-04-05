@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Drawing;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.Domain
 {
@@ -29,6 +31,8 @@ namespace Core.Domain
         public int age { get; set; }
         public Sex sex { get; set; }
 
+
+
         // Might not use this. Check again later.
         public PatientType type { get; set; }
 
@@ -49,17 +53,15 @@ namespace Core.Domain
 
         }
 
-        private int CalculateAge(DateTime birthDate) {
+        public int CalculateAge(DateTime birthDate) {
             return DateTime.Now.Year - birthDate.Year;
         }
     }
 
-
-
     // Patients can be either students or employees. Fill Student -or EmployeeNumber respectively.
     public enum PatientType {
         STUDENT,
-        TEACHER
+        EMPLOYEE
     } 
 
     public enum Sex {

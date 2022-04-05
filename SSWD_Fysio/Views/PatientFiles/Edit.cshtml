@@ -1,0 +1,94 @@
+﻿@model SSWD_Fysio.Models.PatientFileViewModel
+
+@{
+    ViewData["Title"] = "Editing Patientfile";
+}
+
+<partial name="_PractitionerBarPartialView" model="Model.practitionerBar"/>
+<form asp-action="Edit" enctype="multipart/form-data">
+    
+    <h2>Patient</h2>
+    <div>
+        <label>Photo:</label>
+        <input asp-for="photo" accept="image/*"/>
+        <span asp-validation-for="photo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+            <label>Name:</label>
+            <input asp-for="patientFile.patient.name"/>
+            <span asp-validation-for="patientFile.patient.mail" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+            <label>Email:</label>
+            <input asp-for="patientFile.patient.mail"/>
+            <span asp-validation-for="patientFile.patient.mail" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+            <label>Phone:</label>
+            <input asp-for="patientFile.patient.phone"/>
+            <span asp-validation-for="patient.phone" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+            <label>Birthdate:</label>
+            <input asp-for="patientFile.birthDate"/>
+            <span asp-validation-for="patientFile.birthDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+            <label>Sex:</label>
+            <select asp-for="sex" class ="form-control" asp-items="ViewBag.SexOptions">
+            </select>
+            <span asp-validation-for="sex" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+            <label>Patient Type:</label>
+            <select asp-for="type" class ="form-control" asp-items="ViewBag.PatientTypeOptions">
+            </select>
+            <span asp-validation-for="type" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+            <label>Employee / Student Number:</label>
+            <input asp-for="number"/>
+            <span asp-validation-for="number" class="text-danger"></span>
+    </div>
+
+    <br />
+
+    <h2>Treatment Plan</h2>
+    <div class="form-group">
+            <label>Diagnosis Code:</label>
+            <select asp-for="diagnosis" class ="form-control" asp-items="ViewBag.DiagnosisOptions">
+            </select>
+            <span asp-validation-for="diagnosis" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+            <label>Complaint:</label>
+            <input asp-for="treatmentPlan.complaint"/>
+            <span asp-validation-for="treatmentPlan.complaint" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+            <label>Weekly Sessions:</label>
+            <input asp-for="treatmentPlan.weeklySessions"/>
+            <span asp-validation-for="treatmentPlan.weeklySessions" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+            <label>Session duration (in minutes):</label>
+            <input asp-for="treatmentPlan.sessionDuration"/>
+            <span asp-validation-for="treatmentPlan.sessionDuration" class="text-danger"></span>
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <a asp-controller="PractitionerDashboard" asp-action="Index" >Back</a> |
+        <a onclick="return confirm('Are you sure you want to remove this treatment?');" 
+            asp-controller="PatientFiles" asp-action="Delete" asp-route-id="@Model.patientFile.patientFileId">Delete</a> |
+        <input type="submit" value="Submit" class="btn btn-primary" />
+    </div>
+</form>

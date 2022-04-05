@@ -6,12 +6,19 @@ using Core.Domain;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.Threading.Tasks;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace SSWD_Fysio.Controllers
 {
     [AllowAnonymous]
     public class IntakeController : Controller
     {
+        private List<VektisDiagnosis> diagnosis;
+        private HttpClient client = new HttpClient();
+
         // Repositories
         private IPatientFileRepository fileRepo;
         private IPatientRepository patientRepo;
@@ -45,13 +52,11 @@ namespace SSWD_Fysio.Controllers
             IntakeViewModel model = new IntakeViewModel();
 
             // Codes for debugging
-            model.diagnosisCodes.Add("Alpha");
-            model.diagnosisCodes.Add("Beta");
+            PopulateDiagnosis();
 
             // Preparing View Data for Intake viewmodel
             ViewData["SexOptions"] = new SelectList(model.sexOptions);
             ViewData["PatientTypeOptions"] = new SelectList(model.patientTypes);
-            ViewData["DiagnosisOptions"] = new SelectList(model.diagnosisCodes);
 
             ViewData["Practitioners"] = new SelectList(practitionerRepo.getAllPractitioners(), "practitionerId", "name");
             ViewData["Supervisors"] = new SelectList(practitionerRepo.getAllSupervisors(), "practitionerId", "name");
@@ -76,7 +81,7 @@ namespace SSWD_Fysio.Controllers
             switch (model.chosenType)
             {
                 case "Employee":
-                    file.patient.type = PatientType.TEACHER;
+                    file.patient.type = PatientType.EMPLOYEE;
                     file.patient.employeeNumber = model.number;
                     break;
                 case "Student":
@@ -103,6 +108,7 @@ namespace SSWD_Fysio.Controllers
             file.patient.name = model.name;
             file.patient.mail = model.mail;
             file.patient.phone = model.phone;
+            file.patient.age = file.patient.CalculateAge(model.birthDate);
             file.birthDate = model.birthDate;
 
             // Setting date to when the registration happens.
@@ -117,6 +123,40 @@ namespace SSWD_Fysio.Controllers
             fileRepo.AddPatientFile(file);
 
             return RedirectToAction("Index", "PractitionerDashboard");
+        }
+
+        private void PopulateDiagnosis()
+        {
+            // Fill diagnosis
+            try
+            {
+                ViewData["DiagnosisOptions"] = GetData().Result;
+            }
+            catch (Exception ex)
+            {
+                ViewData["DiagnosisOptions"] = new SelectList("0");
+            }
+        }
+
+        private async Task<SelectList> GetData()
+        {
+            diagnosis = new List<VektisDiagnosis>();
+
+            HttpResponseMessage response = await client.GetAsync("http://localhost:5000/Diagnosis");
+            response.EnsureSuccessStatusCode();
+            string responseBody = await response.Content.ReadAsStringAsync();
+
+            diagnosis = JsonConvert.DeserializeObject<List<VektisDiagnosis>>(responseBody);
+            diagnosis.Sort((x, y) => String.Compare(x.code, y.code));
+
+            List<string> diagnosisOptions = new List<string>();
+            foreach (VektisDiagnosis vk in diagnosis)
+            {
+                diagnosisOptions.Add(vk.code + ", " + vk.pathology);
+            }
+
+            SelectList output = new SelectList(diagnosisOptions);
+            return output;
         }
     }
 }

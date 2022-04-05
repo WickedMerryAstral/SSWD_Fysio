@@ -17,6 +17,8 @@ namespace SSWD_Fysio.Controllers
     [AllowAnonymous]
     public class HomeController : Controller
     {
+        private AppAccount appUser;
+
         // Repositories
         private IPatientFileRepository fileRepo;
         private IPatientRepository patientRepo;
@@ -47,6 +49,23 @@ namespace SSWD_Fysio.Controllers
 
         public IActionResult Index()
         {
+            // Getting user, redirecting based on user type.
+            GetUser();
+
+            if (appUser == null) {
+                return RedirectToAction("Login", "Account");
+            }
+
+            switch (appUser.accountType) {
+                case AccountType.PRACTITIONER:
+                    return RedirectToAction("Index", "PractitionerDashboard");
+
+                case AccountType.PATIENT:
+                    int fileId = patientRepo.FindPatientById(appUser.patientId).patientFileId;
+                    return RedirectToAction("Details", "PatientFiles", new {id = fileId});
+
+            }
+
             HomeViewModel vm = new HomeViewModel();
             vm.practitionerBar.amountOfAppointments = 3;
             vm.practitionerBar.isPractitioner = true;
@@ -73,7 +92,6 @@ namespace SSWD_Fysio.Controllers
 
         public void FillData() {
 
-            // Some default data to fill the void
             // In order of creation in business logic:
             // Account
             // Practitioner
@@ -151,6 +169,12 @@ namespace SSWD_Fysio.Controllers
             //patientAcc1.mail = pf1.patient.mail;
             //patientAcc1.accountType = AccountType.PATIENT;
             // appAccRepo.AddAppAccount(patientAcc1);
+        }
+
+        private void GetUser()
+        {
+            string mail = User.Identity.Name;
+            appUser = appAccRepo.FindAccountByMail(mail);
         }
     }
 }

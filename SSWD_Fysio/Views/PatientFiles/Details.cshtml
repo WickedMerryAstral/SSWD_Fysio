@@ -1,11 +1,16 @@
 ﻿@model SSWD_Fysio.Models.PatientFileViewModel
 
+@{
+    ViewData["Title"] = "Patient File";
+}
+
 <partial name="_PractitionerBarPartialView" model="Model.practitionerBar"/>
 <md-container>
     <h2>Patient</h2>
-        <div>
-            <label>Photo</label>
-            <label>W.I.P</label>
+        <div >
+            <label>Photo:</label>
+            <br />
+            <img src="@Model.imgSource" alt="Patient Photo" style="max-height: 200px; max-width: 200px;"/>
         </div>
 
         <div>
@@ -118,5 +123,20 @@
                 }
             </tbody>
         </table>
-        <a asp-controller="Treatments" asp-action="Create" asp-route-id="@Model.patientFile.patientFileId">Add Comment</a>
+        <a asp-controller="Comments" asp-action="Create">Add Comment</a>
 </md-container>
+
+<br />
+
+@if (Model.practitionerBar.isPractitioner)
+{
+        <md-container>
+        <div class="form-group">
+            <a asp-controller="PractitionerDashboard" asp-action="Index" >Back</a> |
+            <a asp-controller="PatientFiles" asp-action="Edit" asp-route-id="@Model.patientFile.patientFileId">Edit</a> |
+            <a onclick="return confirm('Are you sure you want to remove this patient file?');" 
+                asp-controller="PatientFiles" asp-action="Delete" asp-route-id="@Model.patientFile.patientFileId">Delete</a>
+        </div>
+        </md-container>
+
+}

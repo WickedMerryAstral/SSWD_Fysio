@@ -1,153 +1,109 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Core.Domain;
+using Core.DomainServices;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Core.Domain;
-using Infrastructure.EF;
+using Microsoft.Extensions.Logging;
+using SSWD_Fysio.Models;
+using System;
 
 namespace SSWD_Fysio.Controllers
 {
     public class CommentsController : Controller
     {
-        private readonly FysioDBContext _context;
+        private AppAccount appUser;
+        private PractitionerBar practitionerBar;
 
-        public CommentsController(FysioDBContext context)
+        // Repositories
+        private IPatientFileRepository fileRepo;
+        private IPatientRepository patientRepo;
+        private IPractitionerRepository practitionerRepo;
+        private ITreatmentPlanRepository planRepo;
+        private ITreatmentRepository treatmentRepo;
+        private IAppAccountRepository appAccRepo;
+        private ICommentRepository commentRepo;
+
+        private readonly ILogger<CommentsController> _logger;
+
+        public CommentsController(
+            ILogger<CommentsController> logger,
+            IAppAccountRepository app,
+            IPatientFileRepository file,
+            IPatientRepository patient,
+            IPractitionerRepository practitioner,
+            ITreatmentPlanRepository plan,
+            ITreatmentRepository treatment,
+            ICommentRepository comment)
         {
-            _context = context;
+            appAccRepo = app;
+            fileRepo = file;
+            patientRepo = patient;
+            practitionerRepo = practitioner;
+            planRepo = plan;
+            treatmentRepo = treatment;
+            commentRepo = comment;
+            _logger = logger;
         }
 
-        // GET: Comments
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.comments.ToListAsync());
-        }
+        [HttpGet]
+        public IActionResult Create() {
+            GetUser();
 
-        // GET: Comments/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            CommentViewModel comment = new CommentViewModel();
+            comment.practitionerBar = practitionerBar;
 
-            var comment = await _context.comments
-                .FirstOrDefaultAsync(m => m.commentId == id);
-            if (comment == null)
-            {
-                return NotFound();
-            }
-
-            return View(comment);
-        }
-
-        // GET: Comments/Create
-        public IActionResult Create()
-        {
             return View();
         }
 
-        // POST: Comments/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("commentId,practitionerId,patientFileId,postDate,visible,content")] Comment comment)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(comment);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(comment);
-        }
-
-        // GET: Comments/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var comment = await _context.comments.FindAsync(id);
-            if (comment == null)
-            {
-                return NotFound();
-            }
-            return View(comment);
-        }
-
-        // POST: Comments/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("commentId,practitionerId,patientFileId,postDate,visible,content")] Comment comment)
-        {
-            if (id != comment.commentId)
-            {
-                return NotFound();
-            }
+        public IActionResult Create(CommentViewModel model) {
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(comment);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CommentExists(comment.commentId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(comment);
-        }
+                GetUser();
 
-        // GET: Comments/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
+                Comment c = new Comment();
+                c.practitionerId = appUser.practitionerId;
+                c.patientFileId = (int)TempData["PatientFileId"];
+                c.postDate = DateTime.Now;
+
+                c.visible = model.comment.visible;
+                c.content = model.comment.content;
+
+                commentRepo.AddComment(c);
+
+                return RedirectToAction("Details", "PatientFiles", new { id = (int)TempData["PatientFileId"] });
             }
 
-            var comment = await _context.comments
-                .FirstOrDefaultAsync(m => m.commentId == id);
-            if (comment == null)
-            {
-                return NotFound();
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult Details(int id) {
+            GetUser();
+            CommentViewModel vm = new CommentViewModel();
+
+            vm.comment = commentRepo.FindCommentById(id);
+            return View(vm);
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int id) {
+            commentRepo.DeleteComment(id);
+            return RedirectToAction("Details", "PatientFiles", new { id = (int)TempData["PatientFileId"] });
+            TempData.Keep();
+        }
+
+        private void GetUser()
+        {
+            // Finding an account by email
+            string mail = User.Identity.Name;
+            appUser = appAccRepo.FindAccountByMail(mail);
+
+            // Setting the practitioner bar values
+            if (appUser.accountType == AccountType.PRACTITIONER) {
+                practitionerBar = new PractitionerBar();
+                practitionerBar.amountOfAppointments = treatmentRepo.GetTodaysTreatmentsCount(appUser.practitionerId);
+                practitionerBar.isPractitioner = true;
             }
-
-            return View(comment);
-        }
-
-        // POST: Comments/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var comment = await _context.comments.FindAsync(id);
-            _context.comments.Remove(comment);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool CommentExists(int id)
-        {
-            return _context.comments.Any(e => e.commentId == id);
         }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Domain;
 using Core.DomainServices;
 using Microsoft.EntityFrameworkCore;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Infrastructure.EF
 {
@@ -32,6 +34,7 @@ namespace Infrastructure.EF
         public void DeletePatientFile(int id)
         {
             context.patientFiles.Remove(FindPatientFileById(id));
+            context.SaveChanges();
         }
 
         public PatientFile FindPatientFileById(int id)
@@ -64,6 +67,23 @@ namespace Infrastructure.EF
         {
             PatientFile p = FindPatientFileById(id);
             return p.patient;
+        }
+
+        public void UpdatePatientFile(PatientFile newFile)
+        {
+            // Seting IDs first
+            PatientFile file = FindPatientFileById(newFile.patientFileId);
+            newFile.patient.patientId = file.patient.patientId;
+            newFile.treatmentPlan.treatmentPlanId = file.treatmentPlan.treatmentPlanId;
+
+            // Info
+            file.patient = newFile.patient;
+            file.treatmentPlan = newFile.treatmentPlan;
+            file.type = newFile.type;
+            file.dischargeDate = newFile.dischargeDate;
+            file.intakeByPractitionerId = newFile.intakeByPractitionerId;
+            file.registerDate = newFile.registerDate;
+            context.SaveChanges();
         }
     }
 }
