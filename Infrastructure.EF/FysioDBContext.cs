@@ -12,13 +12,17 @@ namespace Infrastructure.EF
         {
         }
 
-        public DbSet<Comment> comments { get; set; }
-        public DbSet<Patient> patients { get; set; }
-        public DbSet<PatientFile> patientFiles { get; set; }
-        public DbSet<Practitioner> practitioners { get; set; }
-        public DbSet<Treatment> treatments { get; set; }
-        public DbSet<TreatmentPlan> treatmentPlans { get; set; }
-        public DbSet<AppAccount> accounts { get; set; }
+        public FysioDBContext() {
+        
+        }
+
+        public virtual DbSet<Comment> comments { get; set; }
+        public virtual DbSet<Patient> patients { get; set; }
+        public virtual DbSet<PatientFile> patientFiles { get; set; }
+        public virtual DbSet<Practitioner> practitioners { get; set; }
+        public virtual DbSet<Treatment> treatments { get; set; }
+        public virtual DbSet<TreatmentPlan> treatmentPlans { get; set; }
+        public virtual DbSet<AppAccount> accounts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder model)
         {

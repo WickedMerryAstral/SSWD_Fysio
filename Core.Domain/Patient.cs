@@ -61,6 +61,18 @@ namespace Core.Domain
             }
             return age;
         }
+
+        public bool IsPatientOver16(DateTime birthDate) {
+            int age = DateTime.Now.Year - birthDate.Year;
+            if (DateTime.Now.Month < birthDate.Month || (DateTime.Now.Month == birthDate.Month && DateTime.Now.Day < birthDate.Day))
+            {
+                age--;
+            }
+            if (age < 16) {
+                return false;
+            }
+            return true;
+        }
     }
 
     // Patients can be either students or employees. Fill Student -or EmployeeNumber respectively.

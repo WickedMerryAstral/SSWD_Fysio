@@ -51,6 +51,18 @@ namespace Infrastructure.EF
             return context.patientFiles.Where(pf => pf.treatmentPlan.practitionerId == practitionerId).ToList();
         }
 
+        public bool IsWithinTreatmentPeriod(int patientFileId, DateTime treatment) {
+            PatientFile file = FindPatientFileById(patientFileId);
+
+            if (treatment > file.dischargeDate) {
+                return false;
+            }
+            if (treatment < file.entryDate) {
+                return false;
+            }
+            return true;
+        }
+
         public List<PatientFile> GetPatientFiles()
         {
             return this.context.patientFiles
