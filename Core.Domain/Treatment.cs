@@ -27,6 +27,7 @@ namespace Core.Domain
 
         // Info
         public DateTime treatmentDate { get; set; }
+        public DateTime treatmentEndDate { get; set; }
         public string location { get; set; }
 
         public Treatment(int practitionerId, int treatmentPlanId, string type, DateTime treatmentDate, string location, int patientId, string patientName, bool hasMandatoryExplanation)

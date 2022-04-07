@@ -80,9 +80,9 @@ namespace Infrastructure.EF
             file.patient = newFile.patient;
             file.treatmentPlan = newFile.treatmentPlan;
             file.type = newFile.type;
-            file.dischargeDate = newFile.dischargeDate;
+            file.birthDate = newFile.birthDate;
+            file.patient.age = newFile.patient.age;
             file.intakeByPractitionerId = newFile.intakeByPractitionerId;
-            file.registerDate = newFile.registerDate;
             context.SaveChanges();
         }
     }

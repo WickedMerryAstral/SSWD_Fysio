@@ -1,6 +1,7 @@
 ﻿using Core.Domain;
 using Core.DomainServices;
 using Infrastructure.EF;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -17,6 +18,7 @@ using System.Threading.Tasks;
 
 namespace SSWD_Fysio.Controllers
 {
+    [Authorize]
     public class PatientFilesController : Controller
     {
         AppAccount appUser;
@@ -71,6 +73,7 @@ namespace SSWD_Fysio.Controllers
 
             // Get patient file, fill in the fields
             PatientFile file = fileRepo.FindPatientFileById(id);
+
             PatientFileViewModel vm = new PatientFileViewModel(file);
             vm.treatments = treatmentRepo.GetTreatmentsByTreatmentPlanId(file.treatmentPlan.treatmentPlanId);
             vm.comments = commentRepo.GetCommentsByFileId(id);
@@ -126,6 +129,7 @@ namespace SSWD_Fysio.Controllers
             PatientFile file = new PatientFile();
 
             GetUser();
+            model.practitionerBar = practitionerBar;
             ViewData["DiagnosisOptions"] = GetDiagnosisData().Result;
 
             if (ModelState.IsValid) {
@@ -202,6 +206,23 @@ namespace SSWD_Fysio.Controllers
             appUser = appAccRepo.FindAccountByMail(mail);
             practitionerBar = new PractitionerBar();
 
+            // Coupling the patient in case the app user is empty.
+            // This happens when a patient has an account, but does not have a patientfile yet.
+            if (appUser == null)
+            {
+                Patient p = patientRepo.FindPatientByMail(mail);
+                if (p != null)
+                {
+                    AppAccount app = new AppAccount();
+                    app.mail = mail;
+                    app.accountType = AccountType.PATIENT;
+                    app.patientId = p.patientId;
+
+                    appAccRepo.AddAppAccount(app);
+                    appUser = app;
+                }
+            }
+
             // Setting the practitioner bar values
             if (appUser.accountType == AccountType.PRACTITIONER)
             {
@@ -216,7 +237,7 @@ namespace SSWD_Fysio.Controllers
             {
                 ViewData["DiagnosisOptions"] = GetDiagnosisData().Result;
             }
-            catch (Exception ex)
+            catch
             {
                 ViewData["DiagnosisOptions"] = new SelectList("0");
             }

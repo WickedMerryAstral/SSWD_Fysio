@@ -4,7 +4,7 @@
     ViewData["Title"] = "Intake Patient";
 }
 
-<h1>Intake form</h1>
+<h1>Register a new patient</h1>
 
 <hr />
 <div class="column">
@@ -92,13 +92,22 @@
                 <input asp-for="sessionDuration" class="form-control" />
                 <span asp-validation-for="sessionDuration" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label class="control-label">Discharge date:</label>
+                <label class="control-label">Start of treatment:</label>
+                <input asp-for="entryDate" class="form-control" />
+                <span asp-validation-for="entryDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">End of treatment:</label>
                 <input asp-for="dischargeDate" class="form-control" />
                 <span asp-validation-for="dischargeDate" class="text-danger"></span>
             </div>
 
             <div class="form-group">
+                <a asp-controller="PractitionerDashboard" asp-action="Index" >Back</a> |
+
                 <input type="submit" value="Submit" class="btn btn-primary" />
             </div>
         </form>

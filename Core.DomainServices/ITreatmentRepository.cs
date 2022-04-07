@@ -13,6 +13,7 @@ namespace Core.DomainServices
         public List<Treatment> GetTreatmentsByPractitionerId(int practitionerId);
         public List<Treatment> GetTodaysTreatmentsByPractitionerId(int practitionerId);
         public List<Treatment> GetTreatmentsByPatientId(int patientId);
+        public bool CanPatientCancel(int treatmentId);
         public int GetTodaysTreatmentsCount(int practitionerId);
         public void UpdateTreatment(Treatment treatment);
         public int DeleteTreatmentById(int id);

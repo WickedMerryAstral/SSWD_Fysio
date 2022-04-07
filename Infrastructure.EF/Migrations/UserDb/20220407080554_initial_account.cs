@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Infrastructure.EF.Migrations.UserDb
 {
-    public partial class initial : Migration
+    public partial class initial_account : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

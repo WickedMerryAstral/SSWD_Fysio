@@ -3,15 +3,25 @@ using Infrastructure.EF;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SSWD_Fysio.Models
 {
     public class IntakeViewModel
     {
         // Patient info:
+        [Required]
         public string name { get; set; }
+
+        [Required]
+        [EmailAddress]
         public string mail { get; set; }
+
+        [Required]
+        [Phone]
         public string phone { get; set; }
+
+        [Required]
         public DateTime birthDate { get; set; }
 
         // Selectors:
@@ -28,16 +38,28 @@ namespace SSWD_Fysio.Models
         public int chosenMainPractitioner { get; set; }
 
         // Student or Employee Number
+        [Required]
         public string number { get; set; }
 
         // Set during registration.
+        [Required]
         public DateTime registryDate { get; set; }
+
+        [Required]
         public DateTime dischargeDate { get; set; }
+        [Required]
+        public DateTime entryDate { get; set; }
 
         // Treatment Plan
         // Duration in minutes.
+        [Required]
         public string mainComplaint { get; set; }
+        [Required]
+        [Range(1, 100)]
         public int weeklySessions { get; set; }
+
+        [Required]
+        [Range(5, 300)]
         public int sessionDuration { get; set; }
 
         public IntakeViewModel() {
@@ -55,10 +77,6 @@ namespace SSWD_Fysio.Models
             // Fill diagnosis codes in from Vektis server later.
             // Call API.
             diagnosisCodes = new List<string>();
-
-            // Add practitioners to list.
-            // Filter out for supervisison list.
-            // Only practitioners who are teachers may supervise.
         }
     }
 }

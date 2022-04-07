@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 
 namespace SSWD_Fysio.Controllers
 {
-    [AllowAnonymous]
     public class AccountController : Controller
     {
         // Repositories
@@ -55,14 +54,27 @@ namespace SSWD_Fysio.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SignIn(SignInViewModel model) 
+        public async Task<IActionResult> Login(SignInViewModel model) 
         {
             // Searching through the app account database to determine account type.
             AppAccount acc = _appAccRepo.FindAccountByMail(model.mail);
 
             if (acc == null)
             {
-                ModelState.AddModelError("ACCOUNT_NOT_FOUND", "No accounts with that email adress found.");
+                // In case the patient had not yet gotten an intake
+                User user = await _userManager.FindByEmailAsync(model.mail);
+                if (user == null)
+                {
+                    ModelState.AddModelError("mail", "No users with that email adress found.");
+                }
+                else {
+                    // Signing in async, waiting for call-back.
+                    var sign = await _signInManager.PasswordSignInAsync(user, HashPassword(model.password), false, false);
+                    if (sign.Succeeded)
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
             }
             else 
             {
@@ -71,7 +83,7 @@ namespace SSWD_Fysio.Controllers
                     User user = await _userManager.FindByEmailAsync(model.mail);
                     if (user == null)
                     {
-                        ModelState.AddModelError("USER_NOT_FOUND", "No users with that email adress found.");
+                        ModelState.AddModelError("mail", "No users with that email adress found.");
                     }
                     else 
                     {
@@ -146,7 +158,33 @@ namespace SSWD_Fysio.Controllers
             }
             else
             {
-                ModelState.AddModelError("", "Mail address not found. Be sure to use the mail adress used during the intake.");
+                // ModelState.AddModelError("mail", "Mail address not found. Be sure to use the mail adress used during the intake.");
+                // Adding a patient without the intake having happened yet.
+
+                if (ModelState.IsValid)
+                {
+                    user.mail = model.mail;
+                    user.Email = model.mail;
+                    user.UserName = model.mail;
+                    user.password = HashPassword(model.password);
+
+                    IdentityResult create = await _userManager.CreateAsync(user, user.password);
+                    if (create.Succeeded)
+                    {
+                        var sign = await _signInManager.PasswordSignInAsync(user, HashPassword(model.password), false, false);
+                        if (sign.Succeeded)
+                        {
+                            return RedirectToAction("Index", "Home");
+                        }
+                    }
+                    else
+                    {
+                        foreach (IdentityError error in create.Errors)
+                        {
+                            ModelState.AddModelError("", error.Description);
+                        }
+                    }
+                }
             }
 
             return View();
@@ -195,6 +233,15 @@ namespace SSWD_Fysio.Controllers
             user.Email = model.mail;
             user.UserName = model.mail;
             user.password = HashPassword(model.password);
+
+            // Available on these days
+            p.availableMON = model.availableMON;
+            p.availableTUE = model.availableTUE;
+            p.availableWED = model.availableWED;
+            p.availableTHU = model.availableTHU;
+            p.availableFRI = model.availableFRI;
+            p.availableSAT = model.availableSAT;
+            p.availableSUN = model.availableSUN;
 
             if (ModelState.IsValid)
             {

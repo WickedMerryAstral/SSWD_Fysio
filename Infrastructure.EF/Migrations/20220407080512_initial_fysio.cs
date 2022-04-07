@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Infrastructure.EF.Migrations
 {
-    public partial class initial : Migration
+    public partial class initial_fysio : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -36,6 +36,7 @@ namespace Infrastructure.EF.Migrations
                     birthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     type = table.Column<int>(type: "int", nullable: false),
                     registerDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    entryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     dischargeDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -55,7 +56,14 @@ namespace Infrastructure.EF.Migrations
                     studentNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     employeeNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BIGNumber = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    BIGNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    availableMON = table.Column<bool>(type: "bit", nullable: false),
+                    availableTUE = table.Column<bool>(type: "bit", nullable: false),
+                    availableWED = table.Column<bool>(type: "bit", nullable: false),
+                    availableTHU = table.Column<bool>(type: "bit", nullable: false),
+                    availableFRI = table.Column<bool>(type: "bit", nullable: false),
+                    availableSAT = table.Column<bool>(type: "bit", nullable: false),
+                    availableSUN = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -146,7 +154,10 @@ namespace Infrastructure.EF.Migrations
                     practitionerId = table.Column<int>(type: "int", nullable: false),
                     treatmentPlanId = table.Column<int>(type: "int", nullable: false),
                     type = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    hasMandatoryExplanation = table.Column<bool>(type: "bit", nullable: false),
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     treatmentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    treatmentEndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     location = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>

@@ -12,14 +12,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.EF.Migrations
 {
     [DbContext(typeof(FysioDBContext))]
-    [Migration("20220329210944_initial")]
-    partial class initial
+    [Migration("20220407080512_initial_fysio")]
+    partial class initial_fysio
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.2")
+                .HasAnnotation("ProductVersion", "6.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -150,6 +150,9 @@ namespace Infrastructure.EF.Migrations
                     b.Property<DateTime>("dischargeDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("entryDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("intakeByPractitionerId")
                         .HasColumnType("int");
 
@@ -179,6 +182,27 @@ namespace Infrastructure.EF.Migrations
 
                     b.Property<string>("BIGNumber")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("availableFRI")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("availableMON")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("availableSAT")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("availableSUN")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("availableTHU")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("availableTUE")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("availableWED")
+                        .HasColumnType("bit");
 
                     b.Property<string>("employeeNumber")
                         .HasColumnType("nvarchar(max)");
@@ -214,6 +238,12 @@ namespace Infrastructure.EF.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("treatmentId"), 1L, 1);
 
+                    b.Property<string>("description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("hasMandatoryExplanation")
+                        .HasColumnType("bit");
+
                     b.Property<string>("location")
                         .HasColumnType("nvarchar(max)");
 
@@ -221,6 +251,9 @@ namespace Infrastructure.EF.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("treatmentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("treatmentEndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("treatmentPlanId")

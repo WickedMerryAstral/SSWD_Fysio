@@ -68,6 +68,7 @@
             <label>Duration (in minutes):</label>
             @Html.DisplayFor(model => model.treatmentPlan.sessionDuration)
         </div>
+        <label>Treatment period: @Model.patientFile.entryDate.Date - @Model.patientFile.dischargeDate.Date</label>
 </md-container>
 
 <md-container>

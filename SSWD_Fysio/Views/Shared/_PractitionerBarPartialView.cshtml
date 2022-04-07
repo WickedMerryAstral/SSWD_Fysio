@@ -1,11 +1,9 @@
 ﻿@model PractitionerBar
 
 @if (Model.isPractitioner) {
-   <div class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
+ <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="navbar-header">
-            <label>You have @Model.amountOfAppointments appointments today!</label>
+            <label>You have @Model.amountOfAppointments appointments today! <a asp-action="Index" asp-controller="Home">Click here to view them.</a> </label>
         </div>
-    </div>
 </div> 
 }

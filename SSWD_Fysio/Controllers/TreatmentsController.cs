@@ -61,6 +61,7 @@ namespace SSWD_Fysio.Controllers
             TreatmentViewModel vm = new TreatmentViewModel();
             vm.treatment.treatmentDate = DateTime.Now;
             vm.patientFile = fileRepo.FindPatientFileById(id);
+            vm.treatmentDate = DateTime.Now.Date;
 
             // Setting active editing file ID
             TempData["TreatmentPlanId"] = vm.patientFile.treatmentPlan.treatmentPlanId;
@@ -77,6 +78,7 @@ namespace SSWD_Fysio.Controllers
 
             // Getting the treatment codes from the database
             PopulateTreatments();
+            ViewData["Practitioners"] = new SelectList(practitionerRepo.getAllPractitioners(), "practitionerId", "name");
 
             // Getting the active patient file
             PatientFile pf = fileRepo.FindPatientFileById((int)TempData["PatientFileId"]);
@@ -88,14 +90,27 @@ namespace SSWD_Fysio.Controllers
             t.treatmentPlanId = (int)TempData["TreatmentPlanId"];
             TempData.Keep();
 
+            // Pre-post checks
+            if (!planRepo.IsPractitionerWorkingOnDay(model.chosenPractitioner, model.treatmentDate))
+            {
+                ModelState.AddModelError("treatmentDate", "Practitioner does not work on this day. Please pick another date.");
+            }
+            if (!planRepo.IsPractitionerAvailable(model.chosenPractitioner,
+                model.treatmentDate, model.treatmentDate.AddMinutes(pf.treatmentPlan.sessionDuration)))
+            {
+                ModelState.AddModelError("treatmentDate", "Practitioner is unavailable at this timeslot. Please pick another date.");
+            }
             if (planRepo.HasReachedWeeklyLimit(model.treatmentDate.Date, pf.treatmentPlan.treatmentPlanId))
             {
-                ModelState.AddModelError("LIMIT_REACHED", "Limit of treatments for this week has been reached.");
+                ModelState.AddModelError("treatmentDate", "Limit of treatments for this week has been reached. Please pick another date.");
             }
-
             if (model.treatmentDate > pf.dischargeDate)
             {
-                ModelState.AddModelError("INVALID_DATE", "Treatment date can't be after discharge date.");
+                ModelState.AddModelError("treatmentDate", "Treatment date can't be after discharge date. Please pick another date.");
+            }
+            if (model.treatmentDate < pf.entryDate)
+            {
+                ModelState.AddModelError("treatmentDate", "Treatment date can't be before entry date. Please pick another date.");
             }
             else
             {
@@ -115,13 +130,14 @@ namespace SSWD_Fysio.Controllers
                     t.location = model.treatment.location;
                     t.practitionerId = model.chosenPractitioner;
                     t.treatmentDate = model.treatmentDate;
+                    t.treatmentEndDate = model.treatmentDate.AddMinutes(pf.treatmentPlan.sessionDuration);
 
                     treatmentRepo.AddTreatment(t);
                     return RedirectToAction("Details", "PatientFiles", new {id = (int)TempData["PatientFileId"]});
                 }
             }
 
-            return RedirectToAction("Create", "Treatments", (int)TempData["PatientFileId"]);
+            return View(model);
         }
 
         [HttpGet]
@@ -144,13 +160,15 @@ namespace SSWD_Fysio.Controllers
             // Getting the active patient file
             PatientFile pf = fileRepo.FindPatientFileById((int)TempData["PatientFileId"]);
             TempData.Keep();
-
             ViewData["Practitioners"] = new SelectList(practitionerRepo.getAllPractitioners(), "practitionerId", "name");
+
 
             // Setting the current variables
             TreatmentViewModel vm = new TreatmentViewModel();
             vm.treatment = treatmentRepo.FindTreatmentById(id);
             vm.patientFile = pf;
+            vm.treatmentDate = vm.treatment.treatmentDate;
+            vm.treatment.treatmentId = id;
 
             // Setting active editing file ID
             TempData["TreatmentId"] = id;
@@ -164,22 +182,41 @@ namespace SSWD_Fysio.Controllers
         {
             GetUser();
             PopulateTreatments();
+            ViewData["Practitioners"] = new SelectList(practitionerRepo.getAllPractitioners(), "practitionerId", "name");
 
             // Getting the active patient file
             PatientFile pf = fileRepo.FindPatientFileById((int)TempData["PatientFileId"]);
             TempData.Keep();
+
             model.patientFile = pf;
+
+            model.treatment.treatmentId = (int)TempData["TreatmentId"];
+            TempData.Keep();
 
             // Setting the right plan Id
             Treatment t = new Treatment();
 
-            if (planRepo.HasReachedWeeklyLimit(model.treatmentDate.Date, pf.treatmentPlan.treatmentPlanId)) {
-                ModelState.AddModelError("LIMIT_REACHED", "Limit of treatments for this week has been reached.");
+            // Pre-post checks
+            if (!planRepo.IsPractitionerWorkingOnDay(model.chosenPractitioner, model.treatmentDate))
+            {
+                ModelState.AddModelError("treatmentDate", "Practitioner does not work on this day. Please pick another date.");
             }
-
+            if (!planRepo.IsPractitionerAvailable(model.chosenPractitioner,
+                model.treatmentDate, model.treatmentDate.AddMinutes(pf.treatmentPlan.sessionDuration)))
+            {
+                ModelState.AddModelError("treatmentDate", "Practitioner is unavailable at this timeslot. Please pick another date.");
+            }
+            if (planRepo.HasReachedWeeklyLimit(model.treatmentDate.Date, pf.treatmentPlan.treatmentPlanId))
+            {
+                ModelState.AddModelError("treatmentDate", "Limit of treatments for this week has been reached. Please pick another date.");
+            }
             if (model.treatmentDate > pf.dischargeDate)
             {
-                ModelState.AddModelError("INVALID_DATE", "Treatment date can't be after discharge date.");
+                ModelState.AddModelError("treatmentDate", "Treatment date can't be after discharge date. Please pick another date.");
+            }
+            if (model.treatmentDate < pf.entryDate)
+            {
+                ModelState.AddModelError("treatmentDate", "Treatment date can't be before entry date. Please pick another date.");
             }
             else
             {
@@ -198,7 +235,9 @@ namespace SSWD_Fysio.Controllers
                     t.location = model.treatment.location;
                     t.practitionerId = model.chosenPractitioner;
                     t.treatmentDate = model.treatmentDate;
+                    t.treatmentEndDate = model.treatmentDate.AddMinutes(pf.treatmentPlan.sessionDuration);
                     t.treatmentId = (int)TempData["TreatmentId"];
+                    TempData.Keep();
 
                     treatmentRepo.UpdateTreatment(t);
                     
@@ -206,13 +245,26 @@ namespace SSWD_Fysio.Controllers
                 }
             }
 
-            return RedirectToAction("Edit", "Treatments", (int)TempData["PatientFileId"]);
+            return View(model);
         }
 
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            treatmentRepo.DeleteTreatmentById(id);
+            GetUser();
+
+            if (appUser.accountType == AccountType.PATIENT)
+            {
+                if (treatmentRepo.CanPatientCancel(id))
+                {
+                    treatmentRepo.DeleteTreatmentById(id);
+                }
+            }
+            else if (appUser.accountType == AccountType.PRACTITIONER){
+
+                treatmentRepo.DeleteTreatmentById(id);
+            }
+
             return RedirectToAction("Index", "PractitionerDashboard");
         }
 
@@ -229,7 +281,7 @@ namespace SSWD_Fysio.Controllers
             {
                 ViewData["TreatmentOptions"] = GetData().Result;
             }
-            catch (Exception ex)
+            catch
             {
                 ViewData["TreatmentOptions"] = new SelectList("0");
             }

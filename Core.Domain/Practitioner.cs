@@ -29,6 +29,28 @@ namespace Core.Domain
         public string phone { get; set; }
         public string BIGNumber { get; set; }
 
+        // Availability checks
+        [Required]
+        public bool availableMON { get; set; }
+
+        [Required]
+        public bool availableTUE { get; set; }
+
+        [Required]
+        public bool availableWED { get; set; }
+
+        [Required]
+        public bool availableTHU { get; set; }
+
+        [Required]
+        public bool availableFRI { get; set; }
+
+        [Required]
+        public bool availableSAT { get; set; }
+
+        [Required]
+        public bool availableSUN { get; set; }
+
         public Practitioner(PractitionerType type, string name, string mail, string studentNumber, string employeeNumber, string phone, string BIGNumber)
         {
             // Collections

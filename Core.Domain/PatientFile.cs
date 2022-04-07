@@ -26,6 +26,7 @@ namespace Core.Domain
         public DateTime birthDate { get; set; }
         public PatientFileType type { get; set; }
         public DateTime registerDate { get; set; }
+        public DateTime entryDate { get; set; }
         public DateTime dischargeDate { get; set; }
 
         public PatientFile(int intakeByPractitioner, int supervisedByPractitioner, DateTime birthDate, PatientFileType type, DateTime registerDate, DateTime dischargeDate)

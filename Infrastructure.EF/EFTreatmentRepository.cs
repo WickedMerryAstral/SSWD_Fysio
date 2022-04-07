@@ -33,7 +33,6 @@ namespace Infrastructure.EF
         public Treatment FindTreatmentById(int id)
         {
             return this.context.treatments.Where(t => t.treatmentId == id).FirstOrDefault();
-            
         }
 
         public List<Treatment> GetTreatmentsByPractitioner(int practitionerId)
@@ -67,6 +66,7 @@ namespace Infrastructure.EF
         {
             Treatment t = FindTreatmentById(treatment.treatmentId);
             t.treatmentDate = treatment.treatmentDate;
+            t.treatmentEndDate = treatment.treatmentEndDate;
             t.location = treatment.location;
             t.type = treatment.type; 
             t.description = treatment.description;
@@ -78,6 +78,17 @@ namespace Infrastructure.EF
         public List<Treatment> GetTodaysTreatmentsByPractitionerId(int practitionerId)
         {
             return context.treatments.Where(t => t.practitionerId == practitionerId && t.treatmentDate.Date == DateTime.Today).ToList();
+        }
+
+        public bool CanPatientCancel(int treatmentId)
+        {
+            Treatment treatment = FindTreatmentById(treatmentId);
+            double daysUntil = (treatment.treatmentDate - DateTime.Now).TotalDays;
+
+            if ((treatment.treatmentDate.Date - DateTime.Now.Date).TotalDays <= 1) {
+                return false;
+            }
+            return true;
         }
     }
 }

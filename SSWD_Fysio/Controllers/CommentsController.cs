@@ -1,5 +1,6 @@
 ﻿using Core.Domain;
 using Core.DomainServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SSWD_Fysio.Models;
@@ -7,6 +8,7 @@ using System;
 
 namespace SSWD_Fysio.Controllers
 {
+    [Authorize]
     public class CommentsController : Controller
     {
         private AppAccount appUser;
@@ -89,7 +91,6 @@ namespace SSWD_Fysio.Controllers
         public IActionResult Delete(int id) {
             commentRepo.DeleteComment(id);
             return RedirectToAction("Details", "PatientFiles", new { id = (int)TempData["PatientFileId"] });
-            TempData.Keep();
         }
 
         private void GetUser()

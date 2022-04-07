@@ -11,13 +11,18 @@ using System.Threading.Tasks;
 using Infrastructure.EF;
 using Core.DomainServices;
 using System.Globalization;
+using System.Text;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.AspNetCore.Identity;
 
 namespace SSWD_Fysio.Controllers
 {
-    [AllowAnonymous]
     public class HomeController : Controller
     {
         private AppAccount appUser;
+
+        // Identity
+        private UserManager<User> _userManager;
 
         // Repositories
         private IPatientFileRepository fileRepo;
@@ -36,7 +41,9 @@ namespace SSWD_Fysio.Controllers
             IPatientRepository patient,
             IPractitionerRepository practitioner,
             ITreatmentPlanRepository plan,
-            ITreatmentRepository treatment)
+            ITreatmentRepository treatment,
+            UserManager<User> userManager,
+            SignInManager<User> signInManager)
         {
             appAccRepo = app;
             fileRepo = file;
@@ -44,38 +51,51 @@ namespace SSWD_Fysio.Controllers
             practitionerRepo = practitioner;
             planRepo = plan;
             treatmentRepo = treatment;
+
+            // Identity
+            _userManager = userManager;
+
+            // Logging
             _logger = logger;
         }
 
         public IActionResult Index()
         {
-            // Getting user, redirecting based on user type.
+            // Getting Identity user
             GetUser();
 
-            if (appUser == null) {
-                return RedirectToAction("Login", "Account");
+            // Account with this e-mail gets created during seeding. This will enforce the existence of these 4 accounts.
+            if (appAccRepo.FindAccountByMail("friday@outlook.com") == null) {
+                Seed();
             }
 
-            switch (appUser.accountType) {
-                case AccountType.PRACTITIONER:
-                    return RedirectToAction("Index", "PractitionerDashboard");
+            HomeViewModel model = new HomeViewModel();
 
-                case AccountType.PATIENT:
-                    int fileId = patientRepo.FindPatientById(appUser.patientId).patientFileId;
-                    return RedirectToAction("Details", "PatientFiles", new {id = fileId});
-
+            if (!User.Identity.IsAuthenticated) {
+                return RedirectToAction("Index", "Account");
             }
 
-            HomeViewModel vm = new HomeViewModel();
-            vm.practitionerBar.amountOfAppointments = 3;
-            vm.practitionerBar.isPractitioner = true;
+            if (appUser != null)
+            {
+                switch (appUser.accountType)
+                {
+                    case AccountType.PRACTITIONER:
+                        return RedirectToAction("Index", "PractitionerDashboard");
 
-            // Test Code Area
-            if (practitionerRepo.getAllSupervisors().Count() == 0) {
-                FillData();
+                    case AccountType.PATIENT:
+                        Patient patient = patientRepo.FindPatientById(appUser.patientId);
+                        if (patient != null)
+                        {
+                            return RedirectToAction("Details", "PatientFiles", new { id = patient.patientFileId });
+                        }
+                        break;
+                }
+            }
+            else {
+                model.noAccount = true;
             }
 
-            return View(vm);
+            return View(model);
         }
 
         public IActionResult Privacy()
@@ -90,14 +110,159 @@ namespace SSWD_Fysio.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        public void FillData() {
+        public void Seed() {
 
-            // In order of creation in business logic:
-            // Account
-            // Practitioner
-            // PatientFile
-            // Patients, TreatmentPlans
-            // Treatments, Comments
+            // Making 2 practitioner accounts, 2 patient accounts.
+            // ################################################################
+            // Friday : Supervisor / Teacher Practitioner (Only works fridays.)
+            // Weekend: Student Practitioner (Only works weekends.)
+            // John Doe: Empty patient for intake later.
+            // Jane Doe: Empty patient which will not have an intake.
+
+            #region PRACTITIONER 1: Friday - Supervisor / Teacher
+
+            // Practitioner details
+            Practitioner friday = new Practitioner();
+            AppAccount fridayAcc = new AppAccount();
+            User fridayUser = new User();
+
+            string fridayEmail = "friday@outlook.com";
+
+            friday.type = PractitionerType.TEACHER;
+            friday.employeeNumber = "12345";
+            friday.BIGNumber = "BIG12345";
+            friday.name = "Friday Chiron";
+            friday.mail = fridayEmail;
+            friday.phone = "0612345678";
+
+            // Availability
+            friday.availableMON = false;
+            friday.availableTUE = false;
+            friday.availableWED = false;
+            friday.availableTHU = false;
+            friday.availableFRI = true;
+            friday.availableSAT = false;
+            friday.availableSUN = false;
+
+            // Identity user
+            fridayUser.mail = fridayEmail;
+            fridayUser.Email = fridayEmail;
+            fridayUser.UserName = fridayEmail;
+            fridayUser.password = HashPassword("!Friday123");
+            _userManager.CreateAsync(fridayUser, fridayUser.password);
+
+            fridayAcc.practitionerId = practitionerRepo.AddPractitioner(friday);
+            fridayAcc.mail = friday.mail;
+            fridayAcc.accountType = AccountType.PRACTITIONER;
+            appAccRepo.AddAppAccount(fridayAcc);
+
+            #endregion
+
+            #region PRACTITIONER 2: Weekend - Student
+
+            // Practitioner details
+            Practitioner weekend = new Practitioner();
+            AppAccount weekendAcc = new AppAccount();
+            User weekendUser = new User();
+
+            string weekendEmail = "weekend@outlook.com";
+
+            weekend.type = PractitionerType.STUDENT;
+            weekend.studentNumber = "6789";
+            weekend.name = "Weekend Studious";
+            weekend.mail = weekendEmail;
+            weekend.phone = "0687654321";
+
+            // Availability
+            weekend.availableMON = false;
+            weekend.availableTUE = false;
+            weekend.availableWED = false;
+            weekend.availableTHU = false;
+            weekend.availableFRI = false;
+            weekend.availableSAT = true;
+            weekend.availableSUN = true;
+
+            // Identity user
+            weekendUser.mail = weekendEmail;
+            weekendUser.Email = weekendEmail;
+            weekendUser.UserName = weekendEmail;
+            weekendUser.password = HashPassword("!Weekend123");
+            _userManager.CreateAsync(weekendUser, weekendUser.password);
+
+            weekendAcc.practitionerId = practitionerRepo.AddPractitioner(weekend);
+            weekendAcc.mail = weekend.mail;
+            weekendAcc.accountType = AccountType.PRACTITIONER;
+            appAccRepo.AddAppAccount(weekendAcc);
+
+            #endregion
+
+            #region PATIENT 1: John 
+            User johnUser = new User();
+
+            string johnEmail = "john@outlook.com";
+
+            johnUser.mail = johnEmail;
+            johnUser.Email = johnEmail;
+            johnUser.UserName = johnEmail;
+            johnUser.password = HashPassword("!John123");
+
+            _userManager.CreateAsync(johnUser, johnUser.password);
+            #endregion
+
+            #region PATIENT 2: Jane
+            User janeUser = new User();
+
+            string janeEmail = "jane@outlook.com";
+
+            janeUser.mail = janeEmail;
+            janeUser.Email = janeEmail;
+            janeUser.UserName = janeEmail;
+            janeUser.password = HashPassword("!Jane123");
+
+            _userManager.CreateAsync(janeUser, janeUser.password);
+            #endregion
+        }
+
+
+        private void GetUser()
+        {
+            if (User.Identity.Name != null) {
+                string mail = User.Identity.Name;
+                appUser = appAccRepo.FindAccountByMail(mail);
+
+                if (appUser == null) {
+                    Patient p = patientRepo.FindPatientByMail(mail);
+
+                    if (p != null) {
+                        AppAccount app = new AppAccount();
+                        app.mail = mail;
+                        app.accountType = AccountType.PATIENT;
+                        app.patientId = p.patientId;
+
+                        appAccRepo.AddAppAccount(app);
+                        appUser = app;
+                    }
+                }
+            }
+        }
+
+        public string HashPassword(string password)
+        {
+            string salt = "aD3LCOSR4G0NR0LSc";
+            byte[] bytes = Encoding.ASCII.GetBytes(salt);
+
+            // Hashing the password using HMACSHA256
+            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                password: password,
+                salt: bytes,
+                prf: KeyDerivationPrf.HMACSHA256,
+                iterationCount: 100000,
+                numBytesRequested: 256 / 8));
+            return hashed;
+        }
+
+        public void FillData_old()
+        {
 
             //// Practitioner, initializing Lists within constructor
             Practitioner pr1 = new Practitioner(
@@ -163,18 +328,7 @@ namespace SSWD_Fysio.Controllers
 
             appAccRepo.AddAppAccount(practitionerAcc1);
             appAccRepo.AddAppAccount(practitionerAcc2);
-
-            //AppAccount patientAcc1 = new AppAccount();
-            //patientAcc1.patientId = pf1.patient.patientId;
-            //patientAcc1.mail = pf1.patient.mail;
-            //patientAcc1.accountType = AccountType.PATIENT;
-            // appAccRepo.AddAppAccount(patientAcc1);
         }
 
-        private void GetUser()
-        {
-            string mail = User.Identity.Name;
-            appUser = appAccRepo.FindAccountByMail(mail);
-        }
     }
 }

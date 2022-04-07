@@ -8,6 +8,7 @@
 <div>
     <form asp-action="Create">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
                     <label>Practitioner:</label>
                     <select asp-for="chosenPractitioner" class ="form-control" asp-items="ViewBag.Practitioners">
@@ -32,9 +33,8 @@
                     <label>Treatment Date:</label>
                     <input asp-for="treatmentDate"/>
                     <span asp-validation-for="treatmentDate" class="text-danger"></span>
-                    <span asp-validation-for="treatmentDate" class="text-danger"></span>
             </div>
-            <label>Discharge date: @Model.patientFile.dischargeDate</label>
+            <label>Treatment period: @Model.patientFile.entryDate.Date - @Model.patientFile.dischargeDate.Date</label>
 
             <div class="form-group">
                 <a asp-controller="PatientFiles" asp-action="Details" asp-route-id="@Model.patientFile.patientFileId">Back</a>

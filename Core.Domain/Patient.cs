@@ -53,8 +53,13 @@ namespace Core.Domain
 
         }
 
+        // Calculating age based on birthdate.
         public int CalculateAge(DateTime birthDate) {
-            return DateTime.Now.Year - birthDate.Year;
+            int age = DateTime.Now.Year - birthDate.Year;
+            if (DateTime.Now.Month < birthDate.Month || (DateTime.Now.Month == birthDate.Month && DateTime.Now.Day < birthDate.Day)) {
+                age--;
+            }
+            return age;
         }
     }
 
