@@ -102,11 +102,11 @@ namespace Infrastructure.EF
             // Checking if the treatment falls under any other treatment.
             foreach (Treatment tr in treatments)
             {
-                if (start >= tr.treatmentDate || start <= tr.treatmentEndDate)
+                if (start >= tr.treatmentDate && start <= tr.treatmentEndDate)
                 {
                     return false;
                 }
-                if (end >= tr.treatmentDate || end <= tr.treatmentEndDate)
+                if (end >= tr.treatmentDate && end <= tr.treatmentEndDate)
                 {
                     return false;
                 }

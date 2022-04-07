@@ -126,11 +126,13 @@ namespace SSWED_Fysio_Test
 
             Treatment treatment_1 = new Treatment();
             treatment_1.treatmentDate = DateTime.ParseExact("2022-04-19 09:00", "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+            treatment_1.treatmentEndDate = treatment_1.treatmentDate.AddMinutes(60);
             treatment_1.treatmentPlanId = 1;
             treatment_1.practitionerId = 1;
 
             Treatment treatment_2 = new Treatment();
-            treatment_2.treatmentDate = DateTime.ParseExact("2022-04-19 09:00", "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+            treatment_2.treatmentDate = DateTime.ParseExact("2022-04-19 09:15", "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+            treatment_2.treatmentEndDate = treatment_2.treatmentDate.AddMinutes(60);
             treatment_2.treatmentPlanId = 1;
             treatment_2.practitionerId = 1;
 
@@ -142,7 +144,7 @@ namespace SSWED_Fysio_Test
             // Act
 
             bool isAvailable = repository.IsPractitionerAvailable(1, 
-                treatment_2.treatmentDate, treatment_2.treatmentDate.AddMinutes(plan.sessionDuration));
+                treatment_2.treatmentDate, treatment_2.treatmentEndDate);
 
             // Assert
 
