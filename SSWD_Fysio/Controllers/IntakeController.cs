@@ -10,6 +10,7 @@ using System;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace SSWD_Fysio.Controllers
 {
@@ -18,6 +19,8 @@ namespace SSWD_Fysio.Controllers
     {
         private List<VektisDiagnosis> diagnosis;
         private HttpClient client = new HttpClient();
+        public IConfiguration Configuration { get; }
+
 
         // Repositories
         private IPatientFileRepository fileRepo;
@@ -29,6 +32,7 @@ namespace SSWD_Fysio.Controllers
 
         private readonly ILogger<IntakeController> _logger;
         public IntakeController(
+            IConfiguration config,
             ILogger<IntakeController> logger,
             IAppAccountRepository app,
             IPatientFileRepository file,
@@ -37,6 +41,7 @@ namespace SSWD_Fysio.Controllers
             ITreatmentPlanRepository plan,
             ITreatmentRepository treatment)
         {
+            Configuration = config;
             appAccRepo = app;
             fileRepo = file;
             patientRepo = patient;
@@ -177,7 +182,7 @@ namespace SSWD_Fysio.Controllers
         {
             diagnosis = new List<VektisDiagnosis>();
 
-            HttpResponseMessage response = await client.GetAsync("http://localhost:5000/Diagnosis");
+            HttpResponseMessage response = await client.GetAsync(Configuration.GetConnectionString("Vektis") + "Diagnosis");
             response.EnsureSuccessStatusCode();
             string responseBody = await response.Content.ReadAsStringAsync();
 

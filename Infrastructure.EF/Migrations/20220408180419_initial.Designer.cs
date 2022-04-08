@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.EF.Migrations
 {
     [DbContext(typeof(FysioDBContext))]
-    [Migration("20220407080512_initial_fysio")]
-    partial class initial_fysio
+    [Migration("20220408180419_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

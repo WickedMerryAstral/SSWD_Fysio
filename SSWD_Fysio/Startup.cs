@@ -48,7 +48,7 @@ namespace SSWD_Fysio
 
             // Database
             services.AddDbContext<FysioDBContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+                options.UseSqlServer(Configuration.GetConnectionString("Fysio"))
             );
 
             services.AddDbContext<UserDbContext>(options =>

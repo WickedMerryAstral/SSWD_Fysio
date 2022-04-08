@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SSWD_Fysio.Models;
@@ -25,6 +26,7 @@ namespace SSWD_Fysio.Controllers
         PractitionerBar practitionerBar;
         private List<VektisDiagnosis> diagnosis;
         static readonly HttpClient client = new HttpClient();
+        public IConfiguration Configuration { get; }
 
         // Repositories
         private IPatientFileRepository fileRepo;
@@ -38,6 +40,7 @@ namespace SSWD_Fysio.Controllers
         private readonly ILogger<HomeController> _logger;
 
         public PatientFilesController(
+            IConfiguration config,
             ILogger<HomeController> logger,
             IAppAccountRepository app,
             IPatientFileRepository file,
@@ -47,6 +50,7 @@ namespace SSWD_Fysio.Controllers
             ITreatmentRepository treatment,
             ICommentRepository comment)
         {
+            Configuration = config;
             appAccRepo = app;
             fileRepo = file;
             patientRepo = patient;
@@ -246,7 +250,7 @@ namespace SSWD_Fysio.Controllers
         private async Task<SelectList> GetDiagnosisData() {
             diagnosis = new List<VektisDiagnosis>();
 
-            HttpResponseMessage response = await client.GetAsync("http://localhost:5000/Diagnosis");
+            HttpResponseMessage response = await client.GetAsync(Configuration.GetConnectionString("Vektis") + "Diagnosis");
             response.EnsureSuccessStatusCode();
             string responseBody = await response.Content.ReadAsStringAsync();
 

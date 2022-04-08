@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.EF.Migrations.UserDb
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20220407080554_initial_account")]
-    partial class initial_account
+    [Migration("20220408180826_identity")]
+    partial class identity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

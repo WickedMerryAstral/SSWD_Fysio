@@ -259,7 +259,7 @@ namespace SSWD_Fysio.Controllers
                     var sign = await _signInManager.PasswordSignInAsync(user, HashPassword(model.password), false, false);
                     if (sign.Succeeded)
                     {
-                        return RedirectToAction("Index", "Account");
+                        return RedirectToAction("Index", "Home");
                     }
                 }
                 else
