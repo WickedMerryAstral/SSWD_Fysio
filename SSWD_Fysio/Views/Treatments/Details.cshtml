@@ -1,0 +1,45 @@
+﻿@model SSWD_Fysio.Models.TreatmentViewModel
+
+<partial name="_PractitionerBarPartialView" model="Model.practitionerBar"/>
+<md-container>
+    <h2>Treatment @Model.treatment.treatmentId</h2>
+        <div>
+            <label>Practitioner:</label>
+            @Html.DisplayFor(model => model.currentPractitioner.name)
+        </div>
+
+        <div>
+            <label>Code:</label>
+            @Html.DisplayFor(model => model.treatment.type)
+        </div>
+
+        <div>
+            <label>Mandatory Explanation:</label>
+            @Html.DisplayFor(model => model.treatment.hasMandatoryExplanation)
+        </div>
+
+        <div>
+            <label>Description:</label>
+            @Html.DisplayFor(model => model.treatment.description)
+        </div>
+
+        <div>
+            <label>Treatment Date:</label>
+            @Html.DisplayFor(model => model.treatment.treatmentDate)
+        </div>
+        <div>
+            <label>Treatment End:</label>
+            @Html.DisplayFor(model => model.treatment.treatmentEndDate)
+        </div>
+
+        <div>
+            <label>Location:</label>
+            @Html.DisplayFor(model => model.treatment.location)
+        </div>
+        <div class="form-group">
+            <a href="javascript: history.go(-1)">Back</a>|
+            <a asp-controller="Treatments" asp-action="Edit" asp-route-id="@Model.treatment.treatmentId">Edit</a>|
+            <a onclick="return confirm('Are you sure you want to remove this treatment?');" 
+                asp-controller="Treatments" asp-action="Delete" asp-route-id="@Model.treatment.treatmentId">Delete</a>
+        </div>
+</md-container>

@@ -1,0 +1,44 @@
+﻿@model SSWD_Fysio.Models.TreatmentViewModel
+
+@{
+    ViewData["Title"] = "Adding treatment";
+}
+
+<h2>Adding Treatment for @Model.patientFile.patient.name</h2>
+<div>
+    <form asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                    <label>Practitioner:</label>
+                    <select asp-for="chosenPractitioner" class ="form-control" asp-items="ViewBag.Practitioners">
+                    </select>
+                    <span asp-validation-for="chosenPractitioner" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                    <label>Treatment Type:</label>
+                    <select asp-for="treatment.type" class ="form-control" asp-items="ViewBag.TreatmentOptions">
+                    </select>
+                    <span asp-validation-for="treatment.type" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label>Location:</label>
+                <input asp-for="treatment.location" class="form-control/>
+                <span asp-validation-for="treatment.location" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                    <label>Treatment Date:</label>
+                    <input asp-for="treatmentDate"/>
+                    <span asp-validation-for="treatmentDate" class="text-danger"></span>
+            </div>
+            <label>Treatment period: @Model.patientFile.entryDate.Date - @Model.patientFile.dischargeDate.Date</label>
+
+            <div class="form-group">
+                <a asp-controller="PatientFiles" asp-action="Details" asp-route-id="@Model.patientFile.patientFileId">Back</a>
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+    </form>
+</div>

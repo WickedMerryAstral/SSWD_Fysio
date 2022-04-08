@@ -1,3 +1,6 @@
+using Infrastructure.EF;
+using Core.Domain;
+using Core.DomainServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
@@ -5,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,6 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 
 namespace SSWD_Fysio
 {
@@ -29,20 +35,40 @@ namespace SSWD_Fysio
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
 
             services.AddControllersWithViews(options =>
             {
-                var policy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
-                options.Filters.Add(new AuthorizeFilter(policy));
+
             });
-            services.AddRazorPages()
-                 .AddMicrosoftIdentityUI().AddMvcOptions(options => {});
-            services.AddAuthorization(options=>{options.FallbackPolicy = options.DefaultPolicy;});
+
+            // Database
+            services.AddDbContext<FysioDBContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("Fysio"))
+            );
+
+            services.AddDbContext<UserDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("Identity"))
+            );
+
+            services.AddIdentity<User, IdentityRole>()
+            .AddEntityFrameworkStores<UserDbContext>()
+            .AddDefaultTokenProviders();
+
+            // Dependency injection. Select which implementation will be used.
+            services.AddTransient<IPatientFileRepository, EFPatientFileRepository>();
+            services.AddTransient<IPatientRepository, EFPatientRepository>();
+            services.AddTransient<IPractitionerRepository, EFPractitionerRepository>();
+            services.AddTransient<ITreatmentPlanRepository, EFTreatmentPlanRepository>();
+            services.AddTransient<ITreatmentRepository, EFTreatmentRepository>();
+            services.AddTransient<IAppAccountRepository, EFAppAccountRepository>();
+            services.AddTransient<ICommentRepository, EFCommentRepository>();
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -70,7 +96,6 @@ namespace SSWD_Fysio
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapRazorPages();
                 endpoints.MapControllers();
             });
         }

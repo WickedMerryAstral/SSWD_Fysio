@@ -1,0 +1,95 @@
+﻿@model SSWD_Fysio.Models.RegisterPractitionerViewModel
+@{
+    ViewData["Title"] = "Registering as practitioner";
+}
+
+<div>
+    <h2>Registering as practitioner</h2>
+        <form asp-action="RegisterPractitioner">
+           <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label>Email</label>
+                <input asp-for="mail" class="form-control"/>
+                <span asp-validation-for="mail" class="text-danger"></span>
+            </div>
+           <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label>Password</label>
+                <input name="password" asp-for="password" class="form-control"/>
+                <span asp-validation-for="password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Name</label>
+                <input asp-for="name" class="form-control" />
+                <span asp-validation-for="name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                 <label class="control-label">Are you a student or a teacher?</label>
+                 <select asp-for="chosenType" class ="form-control" asp-items="ViewBag.PractitionerType">
+                 </select>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Employee / Student Nr.</label>
+                <input asp-for="number" class="form-control" />
+                <span asp-validation-for="number" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Phone (Only mandatory for teachers.)</label>
+                <input asp-for="phone" class="form-control" />
+                <span asp-validation-for="phone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">BIG Number (Only applies to Teacher.)</label>
+                <input asp-for="BIGnumber" class="form-control" />
+                <span asp-validation-for="BIGnumber" class="text-danger"></span>
+            </div>
+
+            <h3>Availability</h3>
+            <md-container class="list-group">
+                <md-container>
+                    <input asp-for="availableMON"/>
+                    <label class="control-label">Monday</label>
+                </md-container>
+
+                <md-container>
+                    <input asp-for="availableTUE"/>
+                    <label class="control-label">Tuesday</label>
+                </md-container>
+
+                <md-container>
+                    <input asp-for="availableWED"/>
+                    <label class="control-label">Wednesday</label>
+                </md-container>
+
+                <md-container>
+                    <input asp-for="availableTHU"/>
+                    <label class="control-label">Thursday</label>
+                </md-container>
+
+                <md-container>
+                    <input asp-for="availableFRI"/>
+                    <label class="control-label">Friday</label>
+                </md-container>
+
+                <md-container>
+                    <input asp-for="availableSAT"/>
+                    <label class="control-label">Saturday</label>
+                </md-container>
+
+                <md-container>
+                    <input asp-for="availableSUN"/>
+                    <label class="control-label">Sunday</label>
+                </md-container>
+
+            </md-container>
+
+            <div class="form-group">
+                <input type="button" value="Back" onclick="location.href='@Url.Action("Index", "Account")'" />
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+        </form>
+</div>

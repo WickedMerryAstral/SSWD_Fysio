@@ -1,0 +1,19 @@
+Practitioner 1:
+
+friday@outlook.com
+!Friday123
+
+Practitioner 2:
+
+weekend@outlook.com
+!Weekend123
+
+Patient 1:
+
+john@outlook.com
+!John123
+
+Patient 2 (empty):
+
+jane@outlook.com
+!Jane123

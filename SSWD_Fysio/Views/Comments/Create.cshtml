@@ -1,0 +1,31 @@
+﻿@model SSWD_Fysio.Models.CommentViewModel
+
+@{
+    ViewData["Title"] = "Adding Comment";
+}
+
+<h2>Adding a comment</h2>
+<div>
+    <form asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="form-group">
+                    <label>Content:</label>
+                    <input asp-for="comment.content"/>
+                    <span asp-validation-for="comment.content" class="text-danger"></span>
+                    <span asp-validation-for="comment.content" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                    <label>Display to patient?</label>
+                    <input asp-for="comment.visible"/>
+                    <span asp-validation-for="comment.visible" class="text-danger"></span>
+                    <span asp-validation-for="comment.visible" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <a href="javascript: history.go(-1)">Back</a>
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+    </form>
+</div>

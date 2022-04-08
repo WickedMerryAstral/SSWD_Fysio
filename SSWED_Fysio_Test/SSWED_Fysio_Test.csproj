@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="FluentAssertions" Version="6.6.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageReference Include="Moq" Version="4.17.2" />
+    <PackageReference Include="Moq.EntityFrameworkCore" Version="6.0.1.2" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
+    <PackageReference Include="coverlet.collector" Version="3.1.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core.DomainServices\Core.DomainServices.csproj" />
+    <ProjectReference Include="..\Core.Domain\Core.Domain.csproj" />
+    <ProjectReference Include="..\Infrastructure.API\Infrastructure.API.csproj" />
+    <ProjectReference Include="..\Infrastructure.EF\Infrastructure.EF.csproj" />
+    <ProjectReference Include="..\SSWD_Fysio\SSWD_Fysio.csproj" />
+  </ItemGroup>
+
+</Project>

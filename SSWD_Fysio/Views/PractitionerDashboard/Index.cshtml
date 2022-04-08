@@ -1,0 +1,60 @@
+﻿@model PractitionerDashboardViewModel
+
+<partial name="_PractitionerBarPartialView" model="Model.practitionerBar"/>
+<md-container>
+    <h2>Your patients</h2>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Patient ID</th>
+                    <th>Diagnosis</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pf in Model.practitionerFiles)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => pf.patient.name)</td>
+                        <td>@Html.DisplayFor(modelItem => pf.patient.patientId)</td>
+                        <td>@Html.DisplayFor(modelItem => pf.treatmentPlan.diagnosis)</td>
+                        <td>
+                            <a asp-controller="PatientFiles" asp-action="Details" asp-route-id="@pf.patientFileId">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</md-container>
+<a asp-controller="Intake" asp-action="Create">Intake Patient</a>
+
+<br />
+<md-container>
+    <h2>Today's appointments</h2>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Mandatory Explanation</th>
+                    <th>Code</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var t in Model.treatments)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => t.treatmentDate.TimeOfDay)</td>
+                        <td>@Html.DisplayFor(modelItem => t.hasMandatoryExplanation)</td>
+                        <td>@Html.DisplayFor(modelItem => t.type)</td>
+                        <td>
+                            <a asp-controller="Treatments" asp-action="Details" asp-route-id="@t.treatmentId">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</md-container>
