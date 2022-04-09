@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure.EF", "..\Inf
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure.API", "..\Infrastructure.API\Infrastructure.API.csproj", "{28B1F5FE-29ED-4EFA-9DEA-99863621A559}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSWED_Fysio_Test", "..\SSWED_Fysio_Test\SSWED_Fysio_Test.csproj", "{B6CFAA0C-E7D3-4203-ADD9-FE41A5081E4F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSWED_Fysio_Tests", "..\SSWED_Fysio_Test\SSWED_Fysio_Tests.csproj", "{B6CFAA0C-E7D3-4203-ADD9-FE41A5081E4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
