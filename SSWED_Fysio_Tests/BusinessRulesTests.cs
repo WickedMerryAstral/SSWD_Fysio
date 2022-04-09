@@ -11,7 +11,7 @@ using SSWD_Fysio.Models;
 
 namespace SSWED_Fysio_Test
 {
-    public class BusinessRules
+    public class BusinessRulesTests
     {
         // Business Regels
 
