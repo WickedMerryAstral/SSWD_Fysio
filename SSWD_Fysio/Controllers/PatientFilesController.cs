@@ -129,12 +129,34 @@ namespace SSWD_Fysio.Controllers
         [HttpPost]
         public IActionResult Edit(PatientFileViewModel model) {
 
+            // Preparing View Data for Intake viewmodel
+            model.PopulateOptions();
+            ViewData["SexOptions"] = new SelectList(model.sexOptions);
+            ViewData["PatientTypeOptions"] = new SelectList(model.patientTypeOptions);
+
             // New file to edit
             PatientFile file = new PatientFile();
 
             GetUser();
             model.practitionerBar = practitionerBar;
             ViewData["DiagnosisOptions"] = GetDiagnosisData().Result;
+
+            if (model.patientFile.birthDate > DateTime.Now)
+            {
+                ModelState.AddModelError("patientFile.birthDate", "Please enter a valid date before this day.");
+            }
+            if (file.patient.CalculateAge(model.patientFile.birthDate) < 16)
+            {
+                ModelState.AddModelError("patientFile.birthDate", "Patient must be at least 16 years old to undergo treatment.");
+            }
+            if (model.patientFile.dischargeDate < DateTime.Now)
+            {
+                ModelState.AddModelError("dischargeDate", "Discharge date must be in the future.");
+            }
+            if (model.patientFile.entryDate < DateTime.Now)
+            {
+                ModelState.AddModelError("entryDate", "Entry date must be in the future.");
+            }
 
             if (ModelState.IsValid) {
 

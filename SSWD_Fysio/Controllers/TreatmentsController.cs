@@ -108,37 +108,31 @@ namespace SSWD_Fysio.Controllers
             {
                 ModelState.AddModelError("treatmentDate", "Limit of treatments for this week has been reached. Please pick another date.");
             }
-            if (model.treatmentDate > pf.dischargeDate)
+            if (!fileRepo.IsWithinTreatmentPeriod(pf.patientFileId, model.treatmentDate))
             {
-                ModelState.AddModelError("treatmentDate", "Treatment date can't be after discharge date. Please pick another date.");
+                ModelState.AddModelError("treatmentDate", "Please pick a date inside the treatment period.");
             }
-            if (model.treatmentDate < pf.entryDate)
+
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("treatmentDate", "Treatment date can't be before entry date. Please pick another date.");
-            }
-            else
-            {
-                if (ModelState.IsValid)
+                // Getting info from the code list
+                VektisTreatment vektisTreatment = treatments.Find(vt => vt.code == model.treatment.type);
+                t.hasMandatoryExplanation = false;
+                t.description = vektisTreatment.description;
+                if (vektisTreatment.explanation.Equals("Ja"))
                 {
-                    // Getting info from the code list
-                    VektisTreatment vektisTreatment = treatments.Find(vt => vt.code == model.treatment.type);
-                    t.hasMandatoryExplanation = false;
-                    t.description = vektisTreatment.description;
-                    if (vektisTreatment.explanation.Equals("Ja"))
-                    {
-                        t.hasMandatoryExplanation = true;
-                    };
+                    t.hasMandatoryExplanation = true;
+                };
 
-                    // Data
-                    t.type = vektisTreatment.code;
-                    t.location = model.treatment.location;
-                    t.practitionerId = model.chosenPractitioner;
-                    t.treatmentDate = model.treatmentDate;
-                    t.treatmentEndDate = model.treatmentDate.AddMinutes(pf.treatmentPlan.sessionDuration);
+                // Data
+                t.type = vektisTreatment.code;
+                t.location = model.treatment.location;
+                t.practitionerId = model.chosenPractitioner;
+                t.treatmentDate = model.treatmentDate;
+                t.treatmentEndDate = model.treatmentDate.AddMinutes(pf.treatmentPlan.sessionDuration);
 
-                    treatmentRepo.AddTreatment(t);
-                    return RedirectToAction("Details", "PatientFiles", new {id = (int)TempData["PatientFileId"]});
-                }
+                treatmentRepo.AddTreatment(t);
+                return RedirectToAction("Details", "PatientFiles", new { id = (int)TempData["PatientFileId"] });
             }
 
             return View(model);
@@ -214,39 +208,33 @@ namespace SSWD_Fysio.Controllers
             {
                 ModelState.AddModelError("treatmentDate", "Limit of treatments for this week has been reached. Please pick another date.");
             }
-            if (model.treatmentDate > pf.dischargeDate)
+            if (!fileRepo.IsWithinTreatmentPeriod(pf.patientFileId, model.treatmentDate))
             {
-                ModelState.AddModelError("treatmentDate", "Treatment date can't be after discharge date. Please pick another date.");
+                ModelState.AddModelError("treatmentDate", "Please pick a date inside the treatment period.");
             }
-            if (model.treatmentDate < pf.entryDate)
-            {
-                ModelState.AddModelError("treatmentDate", "Treatment date can't be before entry date. Please pick another date.");
-            }
-            else
-            {
-                if (ModelState.IsValid)
-                {
-                    // Getting info from the code list
-                    VektisTreatment vektisTreatment = treatments.Find(vt => vt.code == model.treatment.type);
-                    t.hasMandatoryExplanation = false;
-                    t.description = vektisTreatment.description;
-                    if (vektisTreatment.explanation.Equals("Ja")) {
-                        t.hasMandatoryExplanation = true;
-                    };
 
-                    // Data
-                    t.type = vektisTreatment.code;
-                    t.location = model.treatment.location;
-                    t.practitionerId = model.chosenPractitioner;
-                    t.treatmentDate = model.treatmentDate;
-                    t.treatmentEndDate = model.treatmentDate.AddMinutes(pf.treatmentPlan.sessionDuration);
-                    t.treatmentId = (int)TempData["TreatmentId"];
-                    TempData.Keep();
+            if (ModelState.IsValid)
+            {
+                // Getting info from the code list
+                VektisTreatment vektisTreatment = treatments.Find(vt => vt.code == model.treatment.type);
+                t.hasMandatoryExplanation = false;
+                t.description = vektisTreatment.description;
+                if (vektisTreatment.explanation.Equals("Ja")) {
+                    t.hasMandatoryExplanation = true;
+                };
 
-                    treatmentRepo.UpdateTreatment(t);
+                // Data
+                t.type = vektisTreatment.code;
+                t.location = model.treatment.location;
+                t.practitionerId = model.chosenPractitioner;
+                t.treatmentDate = model.treatmentDate;
+                t.treatmentEndDate = model.treatmentDate.AddMinutes(pf.treatmentPlan.sessionDuration);
+                t.treatmentId = (int)TempData["TreatmentId"];
+                TempData.Keep();
+
+                treatmentRepo.UpdateTreatment(t);
                     
-                    return RedirectToAction("Details", "PatientFiles", new { id = (int)TempData["PatientFileId"] });
-                }
+                return RedirectToAction("Details", "PatientFiles", new { id = (int)TempData["PatientFileId"] });
             }
 
             return View(model);

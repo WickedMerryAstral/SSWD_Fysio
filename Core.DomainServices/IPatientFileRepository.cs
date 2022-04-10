@@ -16,6 +16,7 @@ namespace Core.DomainServices
         public Patient GetPatientFromFileId(int id);
         public void UpdatePatientFile(PatientFile patientFile);
         public void DeletePatientFile(int id);
+        public bool IsWithinTreatmentPeriod(int patientFileId, DateTime treatment);
         public List<PatientFile> GetPatientFiles();
 
     }
