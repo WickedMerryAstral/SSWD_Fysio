@@ -20,9 +20,21 @@ jane@outlook.com
 
 Opname account:
 
-Lynn123@outlook.com
+Lynn2000@outlook.com
 Lynnetje123
 
-Old:
-Lynn@Outlook.com
-Lynn123
+
+
+
+FysioDb:
+
+DELETE FROM accounts
+DELETE FROM comments
+DELETE FROM patientfiles
+DELETE FROM patients
+DELETE FROM practitioners
+DELETE FROM treatmentPlans
+DELETE FROM treatments
+
+
+UserDb:
