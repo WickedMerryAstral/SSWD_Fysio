@@ -149,14 +149,6 @@ namespace SSWD_Fysio.Controllers
             {
                 ModelState.AddModelError("patientFile.birthDate", "Patient must be at least 16 years old to undergo treatment.");
             }
-            if (model.patientFile.dischargeDate < DateTime.Now)
-            {
-                ModelState.AddModelError("dischargeDate", "Discharge date must be in the future.");
-            }
-            if (model.patientFile.entryDate < DateTime.Now)
-            {
-                ModelState.AddModelError("entryDate", "Entry date must be in the future.");
-            }
 
             if (ModelState.IsValid) {
 
